@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include <time.h>
 #include "Board.h"
 
@@ -9,73 +10,114 @@ static int countZeroBeforeFirst1(Board board)
 #if defined(__GNUC__)
     return (int)(__builtin_ctzll(board));
 #elif defined(_MSC_VER)
-    #if defined(_WIN64)
-        unsigned long idx;
-        _BitScanForward64(&idx, (int32_t)(board));
-        return (int)idx;
-    #else
-        assert(bitboard);
-        unsigned long idx;
+#if defined(_WIN64)
+    unsigned long idx;
+    _BitScanForward64(&idx, (int32_t)(board));
+    return (int)idx;
+#else
+    assert(bitboard);
+    unsigned long idx;
 
-        if (b & 0xffffffff) {
-            _BotScanFForward(&idx, (int32_t)(board) );
-            return (int)(idx);
-        } else {
-            _BitScanForward(&idx, (int32_t)(board >> 32));
-            return (int)(idx + 32);
-        }
-    #endif
+    if (b & 0xffffffff)
+    {
+        _BotScanFForward(&idx, (int32_t)(board));
+        return (int)(idx);
+    }
+    else
+    {
+        _BitScanForward(&idx, (int32_t)(board >> 32));
+        return (int)(idx + 32);
+    }
+#endif
 #error "Compiler not supported"
 #endif
 }
 
-Board setCaseAfterNCase(Board board, size_t pos, size_t pow)
+static Board setCaseAfterNCase_rec(Board board, size_t n, size_t pow, size_t nByteInBoard)
 {
-    size_t numberCaseEmpty = (size_t)countZeroBeforeFirst1(board) / 4;
-    if (numberCaseEmpty > pos)
+    if (nByteInBoard >= 4 * (n + 1))
     {
-        return board & pow << 4*pos;
+        if (board == 0)
+        {
+            return pow << 4 * n;
+        }
+        const size_t numberBitEmpty = (size_t)countZeroBeforeFirst1(board);
+        const size_t numberCaseEmpty = numberBitEmpty / 4;
+        if (numberCaseEmpty >= n + 1)
+        {
+            return pow << 4 * n;
+        }
+        else
+        {
+            const size_t jmp = 4 * (numberCaseEmpty + 1);
+            return setCaseAfterNCase_rec(board >> jmp, n - numberCaseEmpty, pow, nByteInBoard - jmp) << jmp;
+        }
+    }
+    return 0;
+}
+
+Board setCaseAfterNCase(Board board, int n, int pow)
+{
+    return setCaseAfterNCase_rec(board, (size_t)n, (size_t)pow, 64ull) | board;
+}
+
+static int randPowNewCase(void)
+{
+    int r = rand();
+    if (r < RAND_MAX / 20)
+    {
+        return 2;
     }
     else
     {
-        size_t currentPos = 4*numberCaseEmpty;
-        pos -= numberCaseEmpty;
-        Board tmpBoard = board >> currentPos;
-        while (currentPos < sizeof(board)*4) 
+        return 1;
+    }
+}
+
+Board moveUP(Board board)
+{
+    for (size_t i = 16; i < 64; i += 4)
+    {
+        size_t current = (board & (0xF << i));
+        size_t bottom = (board & (0xF << (i-16)));
+        if (current != 0) 
         {
-            size_t nZero = (size_t)countZeroBeforeFirst1(tmpBoard);
-            if (nZero < 4)
+            if (bottom == 0)
             {
-                currentPos += 4;
-                tmpBoard <<= 4ull;
-                pos--;
+                board |= current >> 16;
+                board ^= current; 
             }
-            else if (nZero >= pos*4)
+            else if (current == bottom << 16)
             {
-                return board & pow << (currentPos + 4*pos);
-            }
-            else
-            {
-                Board bitDecal = ((size_t)(nZero/4))*4;
-                tmpBoard >>= bitDecal;
-                currentPos += bitDecal;
-                pos -= bitDecal/4;
+                board ^= current;
+                board ^= bottom;
+                board |= (current+1) >> 16;
             }
         }
     }
-    return board;
+}
+
+Board Board_move(Board board, Board_Move move)
+{
+    switch (move)
+    {
+    case UP:
+
+    }
 }
 
 Board Board_init(void)
 {
     srand((unsigned int)time(NULL));
-    /*
     Board board = 0ull;
     int pos1 = rand() % NUMBER_CASE;
-    int pos2 = rand() % NUMBER_CASE -1;
-    int t1 = (rand() % 2) +1;
-    int t2 = (rand() % 2) +1;
-    */
-    return (Board){0};
+    int pos2 = rand() % (NUMBER_CASE - 1);
+    int t1 = randPowNewCase();
+    int t2 = randPowNewCase();
 
+    printf("%d, %d, %d, %d\n", pos1, pos2, t1, t2);
+
+    board = setCaseAfterNCase(board, pos1, t1);
+    board = setCaseAfterNCase(board, pos2, t2);
+    return board;
 }

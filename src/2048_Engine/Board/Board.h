@@ -2,7 +2,15 @@
 #define BOARD
 #include <stddef.h>
 
-typedef size_t Board;
+typedef unsigned long long Board;
+
+typedef enum Board_Move
+{
+    UP,
+    DOWN,
+    LEFT,
+    RIGHT,
+} Board_Move;
 
 
 #endif
