@@ -26,7 +26,7 @@ endif()
 
 option(BUILD_DOC "Build documentation" ON)
 if (BUILD_DOC)
-    add_subdirectory(${CMAKE_SOURCE_DIR}/Docs)
+    add_subdirectory(${CMAKE_SOURCE_DIR}/docs)
 endif()
 
 set (CMAKE_C_STANDARD 17)
