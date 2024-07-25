@@ -19,11 +19,6 @@ set (HEADERS
 
 set_sanitizer()
 
-option(BUILD_TEST "Build exemple" ON)
-if (BUILD_TEST)
-    add_subdirectory(${CMAKE_SOURCE_DIR}/src/Board)
-endif()
-
 option(BUILD_DOC "Build documentation" ON)
 if (BUILD_DOC)
     add_subdirectory(${CMAKE_SOURCE_DIR}/docs)
