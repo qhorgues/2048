@@ -3,7 +3,7 @@
 
 struct Board
 {
-  int array[16];
+  int array[4][4];
 };
 
 #endif
