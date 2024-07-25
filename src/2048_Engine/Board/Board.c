@@ -115,8 +115,6 @@ Board Board_init(void)
     int t1 = randPowNewCase();
     int t2 = randPowNewCase();
 
-    printf("%d, %d, %d, %d\n", pos1, pos2, t1, t2);
-
     board = setCaseAfterNCase(board, pos1, t1);
     board = setCaseAfterNCase(board, pos2, t2);
     return board;
