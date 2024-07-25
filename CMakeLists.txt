@@ -21,7 +21,7 @@ set_sanitizer()
 
 option(BUILD_TEST "Build exemple" ON)
 if (BUILD_TEST)
-    add_subdirectory(${CMAKE_SOURCE_DIR}/src/2048_Engine)
+    add_subdirectory(${CMAKE_SOURCE_DIR}/src/Board)
 endif()
 
 option(BUILD_DOC "Build documentation" ON)

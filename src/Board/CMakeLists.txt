@@ -1,6 +1,6 @@
 cmake_minimum_required (VERSION 3.20)
 
-project (2048_Engine LANGUAGES C VERSION 0.1)
+project (Board LANGUAGES C VERSION 0.1)
 
 include (${CMAKE_SOURCE_DIR}/cmake/CompilerWarnings.cmake)
 include (${CMAKE_SOURCE_DIR}/cmake/option.cmake)
