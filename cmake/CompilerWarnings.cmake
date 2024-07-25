@@ -3,7 +3,6 @@ function (set_sanitizer)
 	if (NOT MINGW)
 	
 	if ((CMAKE_BUILD_TYPE STREQUAL "Debug") OR (CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo"))
-			message(STATUS "sanitizer")
 			option(ENEABLE_SANITIZER "Use sanitizer in Debug and RelWithDebInfo build type" TRUE)
 			if (ENEABLE_SANITIZER)
 				if (MSVC)

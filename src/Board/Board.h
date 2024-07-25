@@ -1,16 +1,9 @@
-#ifndef BOARD
-#define BOARD
-#include <stddef.h>
+#ifndef BOARD_H
+#define BOARD_H
 
-typedef unsigned long long Board;
-
-typedef enum Board_Move
+struct Board
 {
-    UP,
-    DOWN,
-    LEFT,
-    RIGHT,
-} Board_Move;
-
+  int array[16];
+};
 
 #endif
