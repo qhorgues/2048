@@ -30,7 +30,7 @@ set (CMAKE_C_STANDARD 17)
 set (CMAKE_C_STANDARD_REQUIRED ON)
 
 add_executable ( ${PROJECT_NAME} ${SRCS} ${HEADERS})
-target_link_libraries(${PROJECT_NAME} PUBLIC 2048_Engine)
+target_link_libraries(${PROJECT_NAME} PUBLIC Board)
 set_target_warnings(${PROJECT_NAME})
 
 include(GNUInstallDirs)
