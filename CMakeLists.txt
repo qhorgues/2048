@@ -11,10 +11,12 @@ include(${CMAKE_SOURCE_DIR}/cmake/CompilerWarnings.cmake)
 set_choice (CMAKE_BUILD_TYPE "Debug;Release;MinSizeRel;RelWithDebInfo" "Debug" "Choose type of build")
 
 set (SRCS
-    src/main.c
+    ${CMAKE_SOURCE_DIR}/src/main.c
 )
 
 set (HEADERS
+    ${CMAKE_SOURCE_DIR}/src/BoardMoves.h
+    ${CMAKE_SOURCE_DIR}/src/GameStatus.h
 )
 
 set_sanitizer()
