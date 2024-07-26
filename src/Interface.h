@@ -7,7 +7,7 @@
 
 typedef void Interface;
 
-Interface* initInterface(void);
+Interface* initInterface(char const* dir_exe);
 void update(Interface* interface, enum GameStatus status, struct Board const* board);
 enum Interactions getInteraction(Interface* interface, enum GameStatus* status);
 void freeInterface(Interface* interface);

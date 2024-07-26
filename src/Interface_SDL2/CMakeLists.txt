@@ -11,6 +11,7 @@ include(${CMAKE_SOURCE_DIR}/cmake/CompilerWarnings.cmake)
 set_choice (CMAKE_BUILD_TYPE "Debug;Release;MinSizeRel;RelWithDebInfo" "Debug" "Choose type of build")
 
 set (SRCS
+  ${CMAKE_SOURCE_DIR}/src/Interface_SDL2/Interface_SDL2.c
 )
 
 set (HEADERS
@@ -18,7 +19,8 @@ set (HEADERS
 )
 
 set (ASSETS
-
+  ${CMAKE_SOURCE_DIR}/assets/calibrib.ttf
+  ${CMAKE_SOURCE_DIR}/assets/imprisha.ttf
 )
 
 if (MINGW)
@@ -31,16 +33,18 @@ endif (MINGW)
 
 message(STATUS "${CMAKE_MODULE_PATH}")
 
-find_package(SDL2 SDL2_ttf REQUIRED)
+find_package(SDL2 REQUIRED)
+find_package(SDL2_ttf REQUIRED)
 
 set (CMAKE_C_STANDARD 17)
 set (CMAKE_C_STANDARD_REQUIRED ON)
 
 set_sanitizer ()
 
-add_executable(${PROJECT_NAME} ${SRCS} ${HEADERS})
+add_library(${PROJECT_NAME} ${SRCS} ${HEADERS})
 #set_target_properties(${PROJECT_NAME} PROPERTIES PUBLIC_HEADER ${HEADERS})
 target_link_libraries(${PROJECT_NAME} SDL2::SDL2 SDL2_ttf::SDL2_ttf)
+set_target_properties(${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE C)
 set_target_warnings(${PROJECT_NAME})
 
 include_directories(${SDL2_INCLUDE_DIRS})
