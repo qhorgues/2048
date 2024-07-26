@@ -4,20 +4,29 @@
 #include <stdio.h>
 #include "../Interface.h"
 
-struct Interface
+#define SIZE_TILE 75
+#define SPACE_BETWEEN_TILE 10
+#define MARGIN_WITH_BOARD 5
+#define SIZE_BOARD SIZE_TILE * 4 + (SPACE_BETWEEN_TILE*5)
+#define RADIUS_TILE SIZE_TILE / 4
+#define RADIUS_BOARD SIZE_BOARD / 4
+
+#define WHITE ((SDL_Color){255, 255, 255, SDL_ALPHA_OPAQUE})
+
+typedef struct Interface_SDL2
 {
 	SDL_Window *window;
 	SDL_Renderer *renderer;
 	TTF_Font *title_font;
 	TTF_Font *button_font;
-	TTF_Font *number_font[4];
-};
+	TTF_Font *number_font[5];
+} Interface_SDL2;
 
 Interface *initInterface(char const *dir_exe)
 {
 	SDL_Init(SDL_INIT_VIDEO);
 	TTF_Init();
-	struct Interface *interface = malloc(sizeof(struct Interface));
+	Interface_SDL2 *interface = malloc(sizeof(Interface_SDL2));
 	if (interface == NULL)
 	{
 		return NULL;
@@ -50,9 +59,9 @@ Interface *initInterface(char const *dir_exe)
 	strcpy(font_dir, dir_exe);
 	strcat(font_dir, "assets/calibrib.ttf");
 
-	for (int i = 1; i < 4; i++)
+	for (int i = 1; i < 5; i++)
 	{
-		interface->number_font[i] = TTF_OpenFont(font_dir, 15 - 3 * i);
+		interface->number_font[i] = TTF_OpenFont(font_dir, 58 - 8 * i);
 	}
 	interface->number_font[0] = interface->number_font[1];
 
@@ -117,26 +126,64 @@ static void RenderDrawTextRoundedRectBox(SDL_Renderer *renderer, SDL_Rect const 
 		return;
 	}
 	SDL_Texture *text_txt = SDL_CreateTextureFromSurface(renderer, surface_txt);
-	SDL_RenderCopy(renderer, text_txt, NULL, rect);
+	SDL_Rect txt_rect;
+	SDL_QueryTexture(text_txt, NULL, NULL, &(txt_rect.w), &(txt_rect.h));
+	txt_rect.x = rect->x + rect->w / 2 - txt_rect.w / 2;
+	txt_rect.y = rect->y + rect->h / 2 - txt_rect.h / 2 + 3;
+
+	SDL_RenderCopy(renderer, text_txt, NULL, &txt_rect);
 	SDL_FreeSurface(surface_txt);
 	SDL_RenderPresent(renderer);
 }
 
+static void DrawTile(Interface_SDL2 *interface, int tile, int index_x, int index_y)
+{
+	SDL_Color backgroud;
+	switch (tile)
+	{
+		case 1:
+			backgroud = WHITE;
+			break;
+		default:
+			backgroud = WHITE;
+			break;
+	}
+	SDL_Rect rect_tile;
+	rect_tile.x = MARGIN_WITH_BOARD + SPACE_BETWEEN_TILE + (SPACE_BETWEEN_TILE + SIZE_TILE) * index_x;
+	rect_tile.y = MARGIN_WITH_BOARD + SPACE_BETWEEN_TILE + (SPACE_BETWEEN_TILE + SIZE_TILE) * index_y;
+	rect_tile.w = SIZE_TILE;
+	rect_tile.h = SIZE_TILE;
+
+	int number_tile = 1 << tile;
+	int numberChr = (int)log10(number_tile);
+	char int_to_chr[7];
+	snprintf(int_to_chr, 6, "%d", number_tile);
+
+	RenderDrawTextRoundedRectBox(interface->renderer, &rect_tile, RADIUS_TILE, backgroud, (SDL_Color){0, 0, 0, SDL_ALPHA_OPAQUE}, interface->number_font[numberChr], int_to_chr);
+
+
+}
+
 void test(Interface* interface)
 {
-	struct Interface* inter = interface;
-	SDL_Rect rect = {.x = 100, .y = 100, .w = 100, .h = 100};
-	SDL_SetRenderDrawColor(inter->renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
-	SDL_RenderFillRoudedRect(inter->renderer, &rect, 25);
+	Interface_SDL2* inter = interface;
+	
+	DrawTile(inter, 3, 0, 0);
+	DrawTile(inter, 6, 1, 0);
+	DrawTile(inter, 9, 2, 0);
+	DrawTile(inter, 13, 3, 0);
+	DrawTile(inter, 16, 0, 1);
+
+
 	SDL_RenderPresent(inter->renderer);
-	SDL_Delay(2000);
+	SDL_Delay(5000);
 }
 
 
 void freeInterface(Interface *interface)
 {
-	struct Interface *inter = interface;
-	for (int i = 1; i < 4; i++)
+	Interface_SDL2 *inter = interface;
+	for (int i = 1; i < 5; i++)
 	{
 		if (inter->number_font[i])
 		{
