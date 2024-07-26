@@ -15,11 +15,14 @@ set (SRCS
 )
 
 set (HEADERS
-    ${CMAKE_SOURCE_DIR}/src/BoardMoves.h
+    ${CMAKE_SOURCE_DIR}/src/Intercations.h
     ${CMAKE_SOURCE_DIR}/src/GameStatus.h
 )
 
 set_sanitizer()
+
+#find_package(SDL2 REQUIRED)
+#find_package(SDL2_ttf REQUIRED)
 
 option(BUILD_DOC "Build documentation" ON)
 if (BUILD_DOC)
@@ -29,7 +32,10 @@ endif()
 set (CMAKE_C_STANDARD 17)
 set (CMAKE_C_STANDARD_REQUIRED ON)
 
+add_subdirectory(src/Interface_SDL2)
+
 add_executable ( ${PROJECT_NAME} ${SRCS} ${HEADERS})
+target_link_libraries(${PROJECT_NAME} PUBLIC Interface_SDL2) # PRIVATE SDL2::SDL2 SDL2_ttf::SDL2_ttf )
 set_target_warnings(${PROJECT_NAME})
 
 include(GNUInstallDirs)
@@ -39,10 +45,6 @@ install(TARGETS ${PROJECT_NAME} PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUD
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
-
-if (WIN32)
-    configure_file(build/${PROJECT_NAME}.exe ${PROJECT_NAME} COPYONLY)
-endif()
 
 # generate a DEB when cpack is run
 SET(CPACK_GENERATOR "DEB")
