@@ -43,7 +43,7 @@ set_sanitizer ()
 
 add_library(${PROJECT_NAME} ${SRCS} ${HEADERS})
 #set_target_properties(${PROJECT_NAME} PROPERTIES PUBLIC_HEADER ${HEADERS})
-target_link_libraries(${PROJECT_NAME} SDL2::SDL2 SDL2_ttf::SDL2_ttf)
+target_link_libraries(${PROJECT_NAME} m SDL2::SDL2 SDL2_ttf::SDL2_ttf)
 set_target_properties(${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE C)
 set_target_warnings(${PROJECT_NAME})
 
