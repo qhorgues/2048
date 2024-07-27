@@ -252,7 +252,7 @@ static bool moveRight(struct GameEngine * gameEngine)
             if (value == 0)
                 continue;
 
-            merge = moves(gameEngine, &invalidPlaces, value, 3 - invalidPlaces, y, 3 - invalidPlaces + 1, y, false);
+            merge = moves(gameEngine, &invalidPlaces, value, 3 - invalidPlaces, y, 3 - invalidPlaces + 1, y, merge);
 
             if (x != 3 - invalidPlaces)
             {
