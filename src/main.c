@@ -21,8 +21,6 @@ char *removeExeInPath(char const *exe_path)
     return path;
 }
 
-void test(Interface* interface);
-
 int main(int argc, char **argv)
 {
     UNUSED(argc);
@@ -33,8 +31,6 @@ int main(int argc, char **argv)
     {
         return -1;
     }
-
-    test(inter);
 
     freeInterface(inter);
     return 0;
