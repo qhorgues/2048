@@ -22,6 +22,17 @@ struct GameEngine
  */
 struct GameEngine initGameEngine(void);
 
+
+
+/**
+ * @brief La fontion réinitialise le tableau.
+ * 
+ * @param[out] gameEngine Le jeu du  2048
+ */
+void resetGameEngine(struct GameEngine * gameEngine);
+
+
+
 /**
  * @brief Permet de faire un mouvement.
  * 
