@@ -1,6 +1,6 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
+#include <stdlib.h>
 #include "Game/Game.h"
 
 #define UNUSED(x) ((void)(x))
