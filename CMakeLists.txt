@@ -35,7 +35,7 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/src/Game)
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/Interface_SDL2)
 
 add_executable ( ${PROJECT_NAME} ${SRCS} ${HEADERS})
-target_link_libraries(${PROJECT_NAME} PUBLIC GameEngine Game Interface_SDL2)
+target_link_libraries(${PROJECT_NAME} PUBLIC Game GameEngine Interface_SDL2)
 set_target_warnings(${PROJECT_NAME})
 
 include(GNUInstallDirs)
