@@ -48,6 +48,6 @@ void move(struct GameEngine * gameEngine, enum Interactions interaction);
  * 
  * @return bool - Renvoie false si le jeu n'est pas fini, true sinon.
  */
-bool isEnding(struct GameEngine * gameEngine);
+bool isEnding(struct GameEngine const * gameEngine);
 
 #endif
