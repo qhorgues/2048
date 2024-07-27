@@ -15,12 +15,13 @@ set (SRCS
 )
 
 set (HEADERS
-    ${CMAKE_SOURCE_DIR}/src/Intercations.h
+    ${CMAKE_SOURCE_DIR}/src/Interactions.h
     ${CMAKE_SOURCE_DIR}/src/GameStatus.h
 )
 
 set_sanitizer()
 
+add_subdirectory(${CMAKE_SOURCE_DIR}/src/GameEngine)
 
 option(BUILD_DOC "Build documentation" ON)
 if (BUILD_DOC)

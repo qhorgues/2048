@@ -1,5 +1,5 @@
-#ifndef INTERCATIONS_H
-#define INTERCATIONS_H
+#ifndef INTERACTIONS_H
+#define INTERACTIONS_H
 
 enum Interactions
 {
