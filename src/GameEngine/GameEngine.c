@@ -88,7 +88,7 @@ static void moves(struct GameEngine * gameEngine, int * invalidPlaces, int value
 {
     if (*invalidPlaces > 0 && value == gameEngine->array[changeYMerge][changeXMerge])
     {   
-        gameEngine->array[changeYMerge][changeXMerge] <<= 1;
+        gameEngine->array[changeYMerge][changeXMerge]++;
         gameEngine->score += gameEngine->array[changeYMerge][changeXMerge];
         (*invalidPlaces)--;
     }
