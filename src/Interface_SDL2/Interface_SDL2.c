@@ -37,8 +37,7 @@
 
 #define BOARD_COLOR ((SDL_Color){187, 173, 160, SDL_ALPHA_OPAQUE})
 
-
-typedef struct Interface_SDL2
+struct Interface_SDL2
 {
     SDL_Window *window;
     SDL_Renderer *renderer;
@@ -46,13 +45,14 @@ typedef struct Interface_SDL2
     TTF_Font *button_font;
     TTF_Font *number_font[5];
     SDL_Texture *texture_number[16];
-} Interface_SDL2;
+    bool key_pressed[4];
+};
 
 Interface *initInterface(char const *dir_exe)
 {
     SDL_Init(SDL_INIT_VIDEO);
     TTF_Init();
-    Interface_SDL2 *interface = malloc(sizeof(Interface_SDL2));
+    struct Interface_SDL2 *interface = malloc(sizeof(struct Interface_SDL2));
     if (interface == NULL)
     {
         return NULL;
@@ -94,6 +94,7 @@ Interface *initInterface(char const *dir_exe)
     free(font_dir);
 
     memset(interface->texture_number, 0, 16 * sizeof(SDL_Texture *));
+    memset(interface->key_pressed, 0, 4 * sizeof(bool));
     return interface;
 }
 
@@ -155,12 +156,12 @@ static void RenderDrawTextRoundedRectBox_with_texture(SDL_Renderer *renderer, SD
 }
 
 static SDL_Texture *RenderDrawTextRoundedRectBox(
-    SDL_Renderer *renderer, 
-    SDL_Rect const *rect, 
-    int radius, 
-    SDL_Color background, 
-    SDL_Color textcolor, 
-    TTF_Font *font, 
+    SDL_Renderer *renderer,
+    SDL_Rect const *rect,
+    int radius,
+    SDL_Color background,
+    SDL_Color textcolor,
+    TTF_Font *font,
     char const *text)
 {
     SDL_SetRenderDrawColor(renderer, background.r, background.g, background.b, background.a);
@@ -182,7 +183,7 @@ static SDL_Texture *RenderDrawTextRoundedRectBox(
     return texture_text;
 }
 
-static void DrawTile(Interface_SDL2 *interface, int tile, int index_x, int index_y)
+static void DrawTile(struct Interface_SDL2 *interface, int tile, int index_x, int index_y)
 {
     SDL_Rect rect_tile;
     rect_tile.x = MARGIN_WITH_BOARD + SPACE_BETWEEN_TILE + (SPACE_BETWEEN_TILE + SIZE_TILE) * index_x;
@@ -212,8 +213,7 @@ static void DrawTile(Interface_SDL2 *interface, int tile, int index_x, int index
         TILE_8192_COLOR,
         TILE_16384_COLOR,
         TILE_32768_COLOR,
-        TILE_65536_COLOR
-    };
+        TILE_65536_COLOR};
     SDL_Color text_color;
     if (tile > 2)
     {
@@ -231,26 +231,26 @@ static void DrawTile(Interface_SDL2 *interface, int tile, int index_x, int index
 
     if (interface->texture_number[tile - 1] != NULL)
     {
-        RenderDrawTextRoundedRectBox_with_texture(interface->renderer, &rect_tile, RADIUS_TILE, interface->texture_number[tile - 1], backgroud[tile-1]);
+        RenderDrawTextRoundedRectBox_with_texture(interface->renderer, &rect_tile, RADIUS_TILE, interface->texture_number[tile - 1], backgroud[tile - 1]);
     }
     else
     {
         interface->texture_number[tile - 1] = RenderDrawTextRoundedRectBox(
-                                                    interface->renderer, 
-                                                    &rect_tile, 
-                                                    RADIUS_TILE, 
-                                                    backgroud[tile-1], 
-                                                    text_color, 
-                                                    interface->number_font[numberChr], int_to_chr);
+            interface->renderer,
+            &rect_tile,
+            RADIUS_TILE,
+            backgroud[tile - 1],
+            text_color,
+            interface->number_font[numberChr], int_to_chr);
     }
 }
 
-void DrawBoard(Interface_SDL2 *interface, int (*board)[4])
+void DrawBoard(struct Interface_SDL2 *interface, int (*board)[4])
 {
     SDL_Rect rect_board = {.x = MARGIN_WITH_BOARD, .y = MARGIN_TOP_WITH_BOARD, .w = SIZE_BOARD, .h = SIZE_BOARD};
-    SDL_Rect rect_background_board = {.x = 0, .y = MARGIN_TOP_WITH_BOARD - MARGIN_WITH_BOARD, .w = WINDOW_WIDTH, .h = SIZE_BOARD + (2*MARGIN_WITH_BOARD)};
-    SDL_SetRenderDrawColor(interface->renderer, WHITE.r, WHITE.g, WHITE.b, SDL_ALPHA_OPAQUE);
-    SDL_RenderFillRect(interface->renderer, &rect_background_board);
+    // SDL_Rect rect_background_board = {.x = 0, .y = MARGIN_TOP_WITH_BOARD - MARGIN_WITH_BOARD, .w = WINDOW_WIDTH, .h = SIZE_BOARD + (2*MARGIN_WITH_BOARD)};
+    // SDL_SetRenderDrawColor(interface->renderer, WHITE.r, WHITE.g, WHITE.b, SDL_ALPHA_OPAQUE);
+    // SDL_RenderFillRect(interface->renderer, &rect_background_board);
     SDL_SetRenderDrawColor(interface->renderer, BOARD_COLOR.r, BOARD_COLOR.g, BOARD_COLOR.b, SDL_ALPHA_OPAQUE);
     SDL_RenderFillRoudedRect(interface->renderer, &rect_board, RADIUS_BOARD);
 
@@ -263,53 +263,98 @@ void DrawBoard(Interface_SDL2 *interface, int (*board)[4])
     }
 }
 
-enum Interactions getInteraction(Interface* interface, enum GameStatus* status)
+void update(Interface *interface, enum GameStatus status, struct GameEngine const *gameEngine)
 {
+    struct Interface_SDL2 *inter = interface;
+    SDL_SetRenderDrawColor(inter->renderer, WHITE.r, WHITE.g, WHITE.b, SDL_ALPHA_OPAQUE);
+    SDL_RenderClear(inter->renderer);
+    switch (status)
+    {
+    case IN_GAME:
+        DrawBoard(inter->renderer, gameEngine->board);
+        break;
+    default:
+        break;
+    }
+}
+
+enum Interactions getInteraction(Interface *interface, enum GameStatus *status, struct GameEngine const *gameEngine)
+{
+    struct Interface_SDL2 *inter = interface;
     SDL_Event event;
-    bool interaction = false;
-    while(!interaction)
+    while (true)
     {
         SDL_WaitEvent(&event);
         switch (event.type)
         {
-            
+        case SDL_WINDOWEVENT:
+            update(interface, *status, gameEngine);
+            break;
+        case SDL_QUIT:
+            return INTERACTION_QUIT;
+        case SDL_KEYDOWN:
+            switch (event.key.keysym.scancode)
+            {
+            case SDL_SCANCODE_UP:
+                if (!inter->key_pressed[0])
+                { 
+                    inter->key_pressed[0] = true;
+                    return INTERACTION_MOVE_UP;
+                }
+                break;
+            case SDL_SCANCODE_DOWN:
+                if (!inter->key_pressed[1])
+                { 
+                    inter->key_pressed[1] = true;
+                    return INTERACTION_MOVE_DOWN;
+                }
+                break;
+            case SDL_SCANCODE_LEFT:
+                if (!inter->key_pressed[2])
+                { 
+                    inter->key_pressed[2] = true;
+                    return INTERACTION_MOVE_LEFT;
+                }
+                break;
+            case SDL_SCANCODE_RIGHT:
+                if (!inter->key_pressed[3])
+                { 
+                    inter->key_pressed[3] = true;
+                    return INTERACTION_MOVE_RIGHT;
+                }
+                break;
+            default:
+                break;
+            }
+            break;
+        case SDL_KEYUP:
+            switch (event.key.keysym.scancode)
+            {
+            case SDL_SCANCODE_UP:
+                inter->key_pressed[0] = false;
+                break;
+            case SDL_SCANCODE_DOWN:
+                inter->key_pressed[1] = false;
+                break;
+            case SDL_SCANCODE_LEFT:
+                inter->key_pressed[2] = false;
+                break;
+            case SDL_SCANCODE_RIGHT:
+                inter->key_pressed[3] = false;
+                break;
+            default:
+                break;
+            }
+            break;
+        default:
+            break;
         }
     }
 }
 
-void test(Interface *interface)
-{
-    Interface_SDL2 *inter = interface;
-    SDL_Rect rect_board = {.x = MARGIN_WITH_BOARD, .y = MARGIN_TOP_WITH_BOARD, .w = SIZE_BOARD, .h = SIZE_BOARD};
-    SDL_SetRenderDrawColor(inter->renderer, WHITE.r, WHITE.g, WHITE.b, SDL_ALPHA_OPAQUE);
-    SDL_RenderClear(inter->renderer);
-    SDL_SetRenderDrawColor(inter->renderer, 187, 173, 160, SDL_ALPHA_OPAQUE);
-    SDL_RenderFillRoudedRect(inter->renderer, &rect_board, RADIUS_BOARD);
-    DrawTile(inter, 1, 0, 0);
-    DrawTile(inter, 2, 1, 0);
-    DrawTile(inter, 3, 2, 0);
-    DrawTile(inter, 4, 3, 0);
-    DrawTile(inter, 5, 0, 1);
-    DrawTile(inter, 6, 1, 1);
-    DrawTile(inter, 7, 2, 1);
-    DrawTile(inter, 8, 3, 1);
-    DrawTile(inter, 9, 0, 2);
-    DrawTile(inter, 10, 1, 2);
-    DrawTile(inter, 11, 2, 2);
-    DrawTile(inter, 12, 3, 2);
-    DrawTile(inter, 13, 0, 3);
-    DrawTile(inter, 14, 1, 3);
-    DrawTile(inter, 15, 2, 3);
-    DrawTile(inter, 16, 3, 3);
-
-
-    SDL_RenderPresent(inter->renderer);
-    SDL_Delay(10000);
-}
-
 void freeInterface(Interface *interface)
 {
-    Interface_SDL2 *inter = interface;
+    struct Interface_SDL2 *inter = interface;
     for (int i = 1; i < 5; i++)
     {
         if (inter->number_font[i])
