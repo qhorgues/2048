@@ -8,7 +8,7 @@
  */
 struct GameEngine
 {
-  int array[4][4];
+  int board[4][4];
   int score;
 };
 
