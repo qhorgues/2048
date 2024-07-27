@@ -13,12 +13,12 @@
 struct GameEngine initGameEngine(void)
 {
     struct GameEngine gameEngine;
-    
+    srand((unsigned int)time(NULL));
     for (int x = 0; x < 4; x++)
     {
         for (int y = 0; y < 4; y++)
         {
-            gameEngine.array[y][x] = 0;
+            gameEngine.board[y][x] = 0;
         }
     }
 
@@ -62,14 +62,14 @@ void spawnRandomNumber(struct GameEngine * gameEngine)
     int poseY = rand() % 4;
 
     int count = poseX + poseY * 4;
-    while (gameEngine->array[poseY][poseX] != 0)
+    while (gameEngine->board[poseY][poseX] != 0)
     {
         count++;
         poseX = count % 4;
         poseY = (count / 4) % 4;
     }
 
-    gameEngine->array[poseY][poseX] = randomNumber;
+    gameEngine->board[poseY][poseX] = randomNumber;
 }
 
 
@@ -86,15 +86,15 @@ void spawnRandomNumber(struct GameEngine * gameEngine)
  */
 static void moves(struct GameEngine * gameEngine, int * invalidPlaces, int value, int changeX, int changeY, int changeXMerge, int changeYMerge)
 {
-    if (*invalidPlaces > 0 && value == gameEngine->array[changeYMerge][changeXMerge])
+    if (*invalidPlaces > 0 && value == gameEngine->board[changeYMerge][changeXMerge])
     {   
-        gameEngine->array[changeYMerge][changeXMerge]++;
-        gameEngine->score += gameEngine->array[changeYMerge][changeXMerge];
+        gameEngine->board[changeYMerge][changeXMerge]++;
+        gameEngine->score += gameEngine->board[changeYMerge][changeXMerge];
         (*invalidPlaces)--;
     }
     else
     {
-        gameEngine->array[changeY][changeX] = value;
+        gameEngine->board[changeY][changeX] = value;
     }
 }
 
@@ -113,7 +113,7 @@ void moveUp(struct GameEngine * gameEngine)
 
         for (int y = 0; y < 4; y++)
         {
-            int value = gameEngine->array[y][x];
+            int value = gameEngine->board[y][x];
 
             if (value == 0)
                 continue;
@@ -121,7 +121,7 @@ void moveUp(struct GameEngine * gameEngine)
             moves(gameEngine, &invalidPlaces, value, x, invalidPlaces, x, invalidPlaces - 1);
 
             if (y != invalidPlaces)
-                gameEngine->array[y][x] = 0;
+                gameEngine->board[y][x] = 0;
                 
             invalidPlaces++;
         }
@@ -143,7 +143,7 @@ void moveDown(struct GameEngine * gameEngine)
 
         for (int y = 3; y >= 0; y--)
         {
-            int value = gameEngine->array[y][x];
+            int value = gameEngine->board[y][x];
 
             if (value == 0)
                 continue;
@@ -151,7 +151,7 @@ void moveDown(struct GameEngine * gameEngine)
             moves(gameEngine, &invalidPlaces, value, x, 3 - invalidPlaces, x, 3 - invalidPlaces + 1);
 
             if (y != 3 - invalidPlaces)
-                gameEngine->array[y][x] = 0;
+                gameEngine->board[y][x] = 0;
                 
             invalidPlaces++;
         }
@@ -173,7 +173,7 @@ void moveLeft(struct GameEngine * gameEngine)
 
         for (int x = 0; x < 4; x++)
         {
-            int value = gameEngine->array[y][x];
+            int value = gameEngine->board[y][x];
 
             if (value == 0)
                 continue;
@@ -181,7 +181,7 @@ void moveLeft(struct GameEngine * gameEngine)
             moves(gameEngine, &invalidPlaces, value, invalidPlaces, y, invalidPlaces - 1, y);
 
             if (x != invalidPlaces)
-                gameEngine->array[y][x] = 0;
+                gameEngine->board[y][x] = 0;
                 
             invalidPlaces++;
         }
@@ -203,7 +203,7 @@ void moveRight(struct GameEngine * gameEngine)
 
         for (int x = 3; x >= 0; x--)
         {
-            int value = gameEngine->array[y][x];
+            int value = gameEngine->board[y][x];
 
             if (value == 0)
                 continue;
@@ -211,7 +211,7 @@ void moveRight(struct GameEngine * gameEngine)
             moves(gameEngine, &invalidPlaces, value, 3 - invalidPlaces, y, 3 - invalidPlaces + 1, y);
 
             if (x != 3 - invalidPlaces)
-                gameEngine->array[y][x] = 0;
+                gameEngine->board[y][x] = 0;
                 
             invalidPlaces++;
         }
@@ -237,7 +237,7 @@ bool isEnding(struct GameEngine * gameEngine)
     {
         for (int x = 0; x < 4; x++)
         {
-            if (copyEngine.array[y][x] == 0)
+            if (copyEngine.board[y][x] == 0)
             {
                 return false;
             }
