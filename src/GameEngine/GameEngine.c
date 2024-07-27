@@ -114,9 +114,12 @@ static void moves(struct GameEngine * gameEngine, int * invalidPlaces, int value
  * @brief Fait le déplacement du haut.
  * 
  * @param[in, out] gameEngine Le jeu du 2048.
+ *
+ * @return bool - Renvoie true si le mouvement a eu lieu, false sinon.
  */
-static void moveUp(struct GameEngine * gameEngine)
+static bool moveUp(struct GameEngine * gameEngine)
 {
+    bool moveApplied = false;
     for (int x = 0; x < 4; x++)
     {
         int invalidPlaces = 0;
@@ -131,11 +134,16 @@ static void moveUp(struct GameEngine * gameEngine)
             moves(gameEngine, &invalidPlaces, value, x, invalidPlaces, x, invalidPlaces - 1);
 
             if (y != invalidPlaces)
+            {
                 gameEngine->board[y][x] = 0;
+                moveApplied = true;
+            }
                 
             invalidPlaces++;
         }
     }
+
+    return moveApplied;
 }
 
 
@@ -144,9 +152,12 @@ static void moveUp(struct GameEngine * gameEngine)
  * @brief Fait le déplacement du bas.
  * 
  * @param[in, out] gameEngine Le jeu du 2048.
+ *
+ * @return bool - Renvoie true si le mouvement a eu lieu, false sinon.
  */
-static void moveDown(struct GameEngine * gameEngine)
+static bool moveDown(struct GameEngine * gameEngine)
 {
+    bool moveApplied = false;
     for (int x = 0; x < 4; x++)
     {
         int invalidPlaces = 0;
@@ -161,11 +172,16 @@ static void moveDown(struct GameEngine * gameEngine)
             moves(gameEngine, &invalidPlaces, value, x, 3 - invalidPlaces, x, 3 - invalidPlaces + 1);
 
             if (y != 3 - invalidPlaces)
+            {
                 gameEngine->board[y][x] = 0;
+                moveApplied = true;
+            }
                 
             invalidPlaces++;
         }
     }
+    
+    return moveApplied;
 }
 
 
@@ -174,9 +190,12 @@ static void moveDown(struct GameEngine * gameEngine)
  * @brief Fait le déplacement à gauche.
  * 
  * @param[in, out] gameEngine Le jeu du 2048.
+ *
+ * @return bool - Renvoie true si le mouvement a eu lieu, false sinon.
  */
-static void moveLeft(struct GameEngine * gameEngine)
+static bool moveLeft(struct GameEngine * gameEngine)
 {
+    bool moveApplied = false;
     for (int y = 0; y < 4; y++)
     {
         int invalidPlaces = 0;
@@ -191,11 +210,16 @@ static void moveLeft(struct GameEngine * gameEngine)
             moves(gameEngine, &invalidPlaces, value, invalidPlaces, y, invalidPlaces - 1, y);
 
             if (x != invalidPlaces)
+            {
                 gameEngine->board[y][x] = 0;
+                moveApplied = true;
+            }
                 
             invalidPlaces++;
         }
     }
+
+    return moveApplied;
 }
 
 
@@ -204,9 +228,12 @@ static void moveLeft(struct GameEngine * gameEngine)
  * @brief Fait le déplacement à droite.
  * 
  * @param[in, out] gameEngine Le jeu du 2048.
+ *
+ * @return bool - Renvoie true si le mouvement a eu lieu, false sinon.
  */
-static void moveRight(struct GameEngine * gameEngine)
+static bool moveRight(struct GameEngine * gameEngine)
 {
+    bool moveApplied = false;
     for (int y = 0; y < 4; y++)
     {
         int invalidPlaces = 0;
@@ -221,11 +248,14 @@ static void moveRight(struct GameEngine * gameEngine)
             moves(gameEngine, &invalidPlaces, value, 3 - invalidPlaces, y, 3 - invalidPlaces + 1, y);
 
             if (x != 3 - invalidPlaces)
+            {
                 gameEngine->board[y][x] = 0;
-                
+                moveApplied = true;
+            }   
             invalidPlaces++;
         }
     }
+    return moveApplied;
 }
 
 
@@ -237,24 +267,28 @@ static void moveRight(struct GameEngine * gameEngine)
  */
 void move(struct GameEngine * gameEngine, enum Interactions interaction)
 {
+    bool moveApplied = false;
     switch (interaction)
     {
     case INTERACTION_MOVE_UP:
-        moveUp(gameEngine);
+        moveApplied = moveUp(gameEngine);
         break;
     case INTERACTION_MOVE_DOWN:
-        moveDown(gameEngine);
+        moveApplied = moveDown(gameEngine);
         break;
     case INTERACTION_MOVE_LEFT:
-        moveLeft(gameEngine);
+        moveApplied = moveLeft(gameEngine);
         break;
     case INTERACTION_MOVE_RIGHT:
-        moveRight(gameEngine);
+        moveApplied = moveRight(gameEngine);
         break;
     default:
         break;
     }
-    spawnRandomNumber(gameEngine);
+    if (moveApplied)
+    {
+        spawnRandomNumber(gameEngine);
+    }
 }
 
 
@@ -263,24 +297,26 @@ void move(struct GameEngine * gameEngine, enum Interactions interaction)
  * 
  * @param[in] gameEngine Le jeu du 2048.
  */
-bool isEnding(struct GameEngine * gameEngine)
+bool isEnding(struct GameEngine const *gameEngine)
 {
-    struct GameEngine copyEngine = *gameEngine;
-    moveUp(&copyEngine);
-    moveDown(&copyEngine);
-    moveLeft(&copyEngine);
-    moveRight(&copyEngine);
-
-    for (int y = 0; y < 4; y++)
+    for (int i = 0; i < 4; i++)
     {
-        for (int x = 0; x < 4; x++)
+        if (gameEngine->board[3][i] == 0 || gameEngine->board[i][3] == 0)
         {
-            if (copyEngine.board[y][x] == 0)
+            return false;
+        }
+    }
+    for (int i = 0; i < 3; i++)
+    {
+        for (int j = 0; j < 3; j++)
+        {
+            if (gameEngine->board[i][j] == 0
+                || gameEngine->board[i][j] == gameEngine->board[i+1][j]
+                || gameEngine->board[i][j] == gameEngine->board[i][j+1])
             {
                 return false;
             }
         }
     }
-
     return true;
 }
