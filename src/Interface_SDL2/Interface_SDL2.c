@@ -407,8 +407,7 @@ static void DrawScore(struct Interface_SDL2 *interface, int score)
 
     char txt_score[12];
     snprintf(txt_score, 12, "%d", score);
-    printf("%s\n", txt_score);
-    int number_chr_score = (score != 0) ? (int)log10(score)+3 : 4;
+    int number_chr_score = (score != 0) ? (int)log10(score)+3 : 3;
     SDL_Surface *surface_txt = TTF_RenderText_Shaded(interface->number_font[number_chr_score], txt_score, WHITE, BOARD_COLOR);
     if (surface_txt == NULL)
     {
@@ -453,7 +452,7 @@ void update(Interface *interface, enum GameStatus status, struct GameEngine cons
     SDL_RenderPresent(inter->renderer);
 }
 
-enum Interactions getInteraction(Interface *interface, enum GameStatus *status, struct GameEngine const *gameEngine)
+enum Interactions getInteraction(Interface *interface, enum GameStatus *status, struct GameEngine *gameEngine)
 {
     struct Interface_SDL2 *inter = interface;
     SDL_Event event;
@@ -526,7 +525,10 @@ enum Interactions getInteraction(Interface *interface, enum GameStatus *status, 
             {
                 for (int i = 0; i < NUMBER_BUTTON; i++)
                 {
-                    checkIfPressedButton(inter->buttons[i], event.button.x, event.button.y);
+                    if (checkIfPressedButton(inter->buttons[i], event.button.x, event.button.y))
+                    {
+                        inter->buttons[i]->active_button(gameEngine, status);
+                    }
                 }
             }
             break;
