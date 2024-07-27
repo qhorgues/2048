@@ -2,7 +2,7 @@
 #define GAME_ENGINE_H
 
 #include <stdbool.h>
-#include "Interactions.h"
+#include "../Interactions.h"
 
 /**
  * @brief Cette structure représente le jeu 2048.
