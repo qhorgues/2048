@@ -17,12 +17,7 @@ struct GameEngine initGameEngine(void)
     struct GameEngine gameEngine;
     srand((unsigned int)time(NULL));
 
-    memset(gameEngine.board, 0, sizeof(int) * 4 * 4);
-
-    gameEngine.score = 0;
-
-    spawnRandomNumber(&gameEngine);
-    spawnRandomNumber(&gameEngine);
+    resetGameEngine(&gameEngine);
 
     return gameEngine;
 }
