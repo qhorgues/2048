@@ -93,7 +93,6 @@ function(set_target_warnings target)
 		-Wundef
 		-Wstrict-prototypes
 		-Wswitch-default
-		-Wswitch-enum
 		-Wstack-usage=1000000
 		-Wcast-align=strict
 
@@ -128,7 +127,6 @@ function(set_target_warnings target)
 		-Wpointer-arith
 		-Wshift-sign-overflow
 		-Wshorten-64-to-32
-		-Wswitch-enum
 		-Wtautological-constant-in-range-compare
 		-Wunreachable-code-aggresive
 		-Wthread-safety
