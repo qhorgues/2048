@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <stdbool.h>
-
+#include <memory.h>
 #include "GameEngine.h"
 
 static void spawnRandomNumber(struct GameEngine * gameEngine);
@@ -29,13 +29,13 @@ struct GameEngine initGameEngine(void)
  * 
  * @param[out] gameEngine Le jeu du  2048
  */
-void resetGameEngine(struct GameEngine * gameEngine)
+void resetGameEngine(struct GameEngine *gameEngine)
 {
     memset(gameEngine->board, 0, sizeof(int) * 4 * 4);
 
     gameEngine->score = 0;
-    spawnRandomNumber(&gameEngine);
-    spawnRandomNumber(&gameEngine);
+    spawnRandomNumber(gameEngine);
+    spawnRandomNumber(gameEngine);
 }
 
 
@@ -50,11 +50,11 @@ static int randNewCase(void)
     int r = rand();
     if (r < RAND_MAX / 10)
     {
-        return 4;
+        return 2;
     }
     else
     {
-        return 2;
+        return 1;
     }
 }
 
@@ -254,6 +254,7 @@ void move(struct GameEngine * gameEngine, enum Interactions interaction)
     default:
         break;
     }
+    spawnRandomNumber(gameEngine);
 }
 
 
