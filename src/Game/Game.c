@@ -26,6 +26,10 @@ void run(char const* current_dir)
         default:
             break;
         }
+        if (isEnding(&engine))
+        {
+            break;
+        }
     }
     freeInterface(interface);
 }
