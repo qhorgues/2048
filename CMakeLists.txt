@@ -22,6 +22,7 @@ set (HEADERS
 set_sanitizer()
 
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/GameEngine)
+add_subdirectory(${CMAKE_SOURCE_DIR}/src/Game)
 
 option(BUILD_DOC "Build documentation" ON)
 if (BUILD_DOC)
@@ -32,7 +33,7 @@ set (CMAKE_C_STANDARD 17)
 set (CMAKE_C_STANDARD_REQUIRED ON)
 
 add_executable ( ${PROJECT_NAME} ${SRCS} ${HEADERS})
-target_link_libraries(${PROJECT_NAME} PUBLIC GameEngine)
+target_link_libraries(${PROJECT_NAME} PUBLIC GameEngine Game)
 set_target_warnings(${PROJECT_NAME})
 
 include(GNUInstallDirs)
