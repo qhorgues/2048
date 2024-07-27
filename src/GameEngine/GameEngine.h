@@ -2,7 +2,7 @@
 #define GAME_ENGINE_H
 
 #include <stdbool.h>
-#include "Interactions.h"
+#include "../Interactions.h"
 
 /**
  * @brief Cette structure représente le jeu 2048.
@@ -48,6 +48,6 @@ void move(struct GameEngine * gameEngine, enum Interactions interaction);
  * 
  * @return bool - Renvoie false si le jeu n'est pas fini, true sinon.
  */
-bool isEnding(struct GameEngine * gameEngine);
+bool isEnding(struct GameEngine const * gameEngine);
 
 #endif
