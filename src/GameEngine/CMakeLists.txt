@@ -8,11 +8,11 @@ include (${CMAKE_SOURCE_DIR}/cmake/option.cmake)
 set_choice (CMAKE_BUILD_TYPE "Debug;Release;MinSizeRel;RelWithDebInfo" "Debug" "Choose type of build")
 
 set (SRCS
-    GameEngine/GameEngine.c
+    ${CMAKE_SOURCE_DIR}/src/GameEngine/GameEngine.c
 )
 
 set (HEADERS
-    GameEngine/GameEngine.h
+    ${CMAKE_SOURCE_DIR}/src/GameEngine/GameEngine.h
 )
 
 set_sanitizer()
