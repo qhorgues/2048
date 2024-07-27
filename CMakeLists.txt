@@ -15,7 +15,7 @@ set (SRCS
 )
 
 set (HEADERS
-    ${CMAKE_SOURCE_DIR}/src/BoardMoves.h
+    ${CMAKE_SOURCE_DIR}/src/Interactions.h
     ${CMAKE_SOURCE_DIR}/src/GameStatus.h
 )
 
