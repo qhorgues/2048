@@ -25,13 +25,6 @@ int main(int argc, char **argv)
 {
     UNUSED(argc);
     char *str = removeExeInPath(argv[0]);
-    Interface *inter = initInterface(str);
     free(str);
-    if (inter == NULL)
-    {
-        return -1;
-    }
-
-    freeInterface(inter);
     return 0;
 }
