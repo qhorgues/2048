@@ -13,12 +13,12 @@
 struct GameEngine initGameEngine(void)
 {
     struct GameEngine gameEngine;
-    
-    for (int x = 0; x < 4; x++)
+    srand((unsigned int)time(NULL));
+    for (int i = 0; i < 4; i++)
     {
-        for (int y = 0; y < 4; y++)
+        for (int j = 0; j < 4; j++)
         {
-            gameEngine.array[y][x] = 0;
+            gameEngine.array[i][j] = 0;
         }
     }
 
@@ -36,7 +36,6 @@ struct GameEngine initGameEngine(void)
  */
 static int randNewCase(void)
 {
-    srand(time(NULL));
     int r = rand();
     if (r < RAND_MAX / 10)
     {
