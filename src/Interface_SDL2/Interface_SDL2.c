@@ -1,7 +1,15 @@
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
+
+#if defined(WIN32)
+    #include <SDL.h>
+    #include <SDL_ttf.h>
+#else
+    #include <SDL2/SDL.h>
+    #include <SDL2/SDL_ttf.h>
+#endif
+
 #include <stdlib.h>
 #include <stdio.h>
+#include <math.h>
 #include "../Interface.h"
 
 #define WINDOW_WIDTH 360
@@ -226,8 +234,8 @@ static void DrawTile(struct Interface_SDL2 *interface, int tile, int index_x, in
 
     int number_tile = 1 << tile;
     int numberChr = (int)log10(number_tile);
-    char int_to_chr[7];
-    snprintf(int_to_chr, 6, "%d", number_tile);
+    char int_to_chr[12];
+    snprintf(int_to_chr, 12, "%d", number_tile);
 
     if (interface->texture_number[tile - 1] != NULL)
     {
@@ -245,7 +253,7 @@ static void DrawTile(struct Interface_SDL2 *interface, int tile, int index_x, in
     }
 }
 
-void DrawBoard(struct Interface_SDL2 *interface, int (*board)[4])
+void DrawBoard(struct Interface_SDL2 *interface, const int (*board)[4])
 {
     SDL_Rect rect_board = {.x = MARGIN_WITH_BOARD, .y = MARGIN_TOP_WITH_BOARD, .w = SIZE_BOARD, .h = SIZE_BOARD};
     // SDL_Rect rect_background_board = {.x = 0, .y = MARGIN_TOP_WITH_BOARD - MARGIN_WITH_BOARD, .w = WINDOW_WIDTH, .h = SIZE_BOARD + (2*MARGIN_WITH_BOARD)};
@@ -258,7 +266,7 @@ void DrawBoard(struct Interface_SDL2 *interface, int (*board)[4])
     {
         for (int j = 0; j < 4; j++)
         {
-            DrawTile(interface, board[i][j], i, j);
+            DrawTile(interface, board[i][j], j, i);
         }
     }
 }
@@ -271,11 +279,12 @@ void update(Interface *interface, enum GameStatus status, struct GameEngine cons
     switch (status)
     {
     case IN_GAME:
-        DrawBoard(inter->renderer, gameEngine->board);
+        DrawBoard(inter, gameEngine->board);
         break;
     default:
         break;
     }
+    SDL_RenderPresent(inter->renderer);
 }
 
 enum Interactions getInteraction(Interface *interface, enum GameStatus *status, struct GameEngine const *gameEngine)
