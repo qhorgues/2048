@@ -1,7 +1,15 @@
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
+
+#if defined(WIN32)
+    #include <SDL.h>
+    #include <SDL_ttf.h>
+#else
+    #include <SDL2/SDL.h>
+    #include <SDL2/SDL_ttf.h>
+#endif
+
 #include <stdlib.h>
 #include <stdio.h>
+#include <math.h>
 #include "../Interface.h"
 
 #define WINDOW_WIDTH 360

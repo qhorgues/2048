@@ -19,8 +19,8 @@ set (HEADERS
 )
 
 set (ASSETS
-  ${CMAKE_SOURCE_DIR}/assets/calibrib.ttf
-  ${CMAKE_SOURCE_DIR}/assets/imprisha.ttf
+  assets/calibrib.ttf
+  assets/imprisha.ttf
 )
 
 if (MINGW)
@@ -55,26 +55,21 @@ if (WIN32)
   
 	# SDL2
   set_option(SDL2_DLL_DIR "SDL2_BINARY_DIR NOT FOUND" PATH "Path to SDL2.dll directory")
-  configure_file(${SDL2_DLL_DIR}/SDL2.dll SDL2.dll COPYONLY)
+  configure_file(${SDL2_DLL_DIR}/SDL2.dll ${CMAKE_BINARY_DIR}/SDL2.dll COPYONLY)
   install(FILES ${SDL2_DLL_DIR}/SDL2.dll DESTINATION .)
 	
 	# SDL2 ttf
 	set_option(SDL2_TTF_DLL_DIR "SDL2_TTF_BINARY_DIR NOT FOUND" PATH "Path to SDL2_ttf.dll directory")
-  configure_file(${SDL2_TTF_DLL_DIR}/SDL2_ttf.dll SDL2_ttf.dll COPYONLY)
+  configure_file(${SDL2_TTF_DLL_DIR}/SDL2_ttf.dll ${CMAKE_BINARY_DIR}/SDL2_ttf.dll COPYONLY)
   install(FILES ${SDL2_TTF_DLL_DIR}/SDL2_ttf.dll DESTINATION .)
 
 #  set_option(SDL2_IMAGE_DLL_DIR "SDL2_IMAGE_BINARY_DIR NOT FOUND" PATH "Path to SDL2_image.dll directory")
-#  configure_file(${SDL2_IMAGE_DLL_DIR}/SDL2_image.dll SDL2_image.dll COPYONLY)
+#  configure_file(${SDL2_IMAGE_DLL_DIR}/SDL2_image.dll ${CMAKE_BINARY_DIR}/SDL2_image.dll COPYONLY)
 #  install(FILES ${SDL2_IMAGE_DLL_DIR}/SDL2_image.dll DESTINATION .)
 #
 #  set_option(SDL2_MIXER_DLL_DIR "SDL2_MIXER_BINARY_DIR NOT FOUND" PATH "Path to SDL2_mixer.dll directory")
-#  configure_file(${SDL2_MIXER_DLL_DIR}/SDL2_mixer.dll SDL2_mixer.dll COPYONLY)
-#  install(FILES ${SDL2_MIXER_DLL_DIR}/SDL2_mixer.dll DESTINATION .)
-
-  foreach(df ${ASSETS})
-      configure_file(${df} ${CMAKE_BINARY_DIR}/${df} COPYONLY)
-  endforeach()
-  
+#  configure_file(${SDL2_MIXER_DLL_DIR}/SDL2_mixer.dll ${CMAKE_BINARY_DIR}/SDL2_mixer.dll COPYONLY)
+#  install(FILES ${SDL2_MIXER_DLL_DIR}/SDL2_mixer.dll DESTINATION .) 
 
 endif(WIN32)
 
@@ -82,10 +77,10 @@ endif(WIN32)
 include(GNUInstallDirs)
 
 install(TARGETS ${PROJECT_NAME} DESTINATION .)
-install(DIRECTORY assets/ DESTINATION assets)
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/assets/ DESTINATION assets)
 
 foreach(df ${ASSETS})
-    file(COPY ${df} DESTINATION ${CMAKE_BINARY_DIR}/assets)
+    file(COPY ${CMAKE_SOURCE_DIR}/${df} DESTINATION ${CMAKE_BINARY_DIR}/assets)
 endforeach()
 
 
