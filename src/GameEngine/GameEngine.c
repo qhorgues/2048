@@ -50,11 +50,11 @@ static int randNewCase(void)
     int r = rand();
     if (r < RAND_MAX / 10)
     {
-        return 4;
+        return 2;
     }
     else
     {
-        return 2;
+        return 1;
     }
 }
 
