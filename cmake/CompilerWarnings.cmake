@@ -92,7 +92,6 @@ function(set_target_warnings target)
 		-Wstrict-overflow=4
 		-Wundef
 		-Wstrict-prototypes
-		-Wswitch-default
 		-Wstack-usage=1000000
 		-Wcast-align=strict
 

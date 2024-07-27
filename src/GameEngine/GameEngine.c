@@ -93,19 +93,22 @@ static void spawnRandomNumber(struct GameEngine * gameEngine)
  * @param[in] changeY La position en Y où l'élément va se déplacer.
  * @param[in] changeXMerge La position en X où l'élément va fusionner.
  * @param[in] changeYMerge La position en Y où l'élément va fusionner.
+ * @param[in] merge Vérifie si le dernier élément a déjà été fusionné.
+ * 
+ * @return bool - Renvoie true si le nombre a fusionner, false sinon.
  */
-static void moves(struct GameEngine * gameEngine, int * invalidPlaces, int value, int changeX, int changeY, int changeXMerge, int changeYMerge)
+static bool moves(struct GameEngine * gameEngine, int * invalidPlaces, int value, int changeX, int changeY, int changeXMerge, int changeYMerge, bool merge)
 {
-    if (*invalidPlaces > 0 && value == gameEngine->board[changeYMerge][changeXMerge])
+    if (*invalidPlaces > 0 && !merge && value == gameEngine->board[changeYMerge][changeXMerge])
     {   
         gameEngine->board[changeYMerge][changeXMerge]++;
         gameEngine->score += gameEngine->board[changeYMerge][changeXMerge];
         (*invalidPlaces)--;
+        return true;
     }
-    else
-    {
-        gameEngine->board[changeY][changeX] = value;
-    }
+    
+    gameEngine->board[changeY][changeX] = value;
+    return false;
 }
 
 
@@ -123,6 +126,7 @@ static bool moveUp(struct GameEngine * gameEngine)
     for (int x = 0; x < 4; x++)
     {
         int invalidPlaces = 0;
+        bool merge = false;
 
         for (int y = 0; y < 4; y++)
         {
@@ -131,7 +135,7 @@ static bool moveUp(struct GameEngine * gameEngine)
             if (value == 0)
                 continue;
 
-            moves(gameEngine, &invalidPlaces, value, x, invalidPlaces, x, invalidPlaces - 1);
+            merge = moves(gameEngine, &invalidPlaces, value, x, invalidPlaces, x, invalidPlaces - 1, merge);
 
             if (y != invalidPlaces)
             {
@@ -161,6 +165,7 @@ static bool moveDown(struct GameEngine * gameEngine)
     for (int x = 0; x < 4; x++)
     {
         int invalidPlaces = 0;
+        bool merge = false;
 
         for (int y = 3; y >= 0; y--)
         {
@@ -169,7 +174,7 @@ static bool moveDown(struct GameEngine * gameEngine)
             if (value == 0)
                 continue;
 
-            moves(gameEngine, &invalidPlaces, value, x, 3 - invalidPlaces, x, 3 - invalidPlaces + 1);
+            merge = moves(gameEngine, &invalidPlaces, value, x, 3 - invalidPlaces, x, 3 - invalidPlaces + 1, merge);
 
             if (y != 3 - invalidPlaces)
             {
@@ -199,6 +204,7 @@ static bool moveLeft(struct GameEngine * gameEngine)
     for (int y = 0; y < 4; y++)
     {
         int invalidPlaces = 0;
+        bool merge = false;
 
         for (int x = 0; x < 4; x++)
         {
@@ -207,7 +213,7 @@ static bool moveLeft(struct GameEngine * gameEngine)
             if (value == 0)
                 continue;
 
-            moves(gameEngine, &invalidPlaces, value, invalidPlaces, y, invalidPlaces - 1, y);
+            merge = moves(gameEngine, &invalidPlaces, value, invalidPlaces, y, invalidPlaces - 1, y, merge);
 
             if (x != invalidPlaces)
             {
@@ -237,6 +243,7 @@ static bool moveRight(struct GameEngine * gameEngine)
     for (int y = 0; y < 4; y++)
     {
         int invalidPlaces = 0;
+        bool merge = false;
 
         for (int x = 3; x >= 0; x--)
         {
@@ -245,7 +252,7 @@ static bool moveRight(struct GameEngine * gameEngine)
             if (value == 0)
                 continue;
 
-            moves(gameEngine, &invalidPlaces, value, 3 - invalidPlaces, y, 3 - invalidPlaces + 1, y);
+            merge = moves(gameEngine, &invalidPlaces, value, 3 - invalidPlaces, y, 3 - invalidPlaces + 1, y, merge);
 
             if (x != 3 - invalidPlaces)
             {
