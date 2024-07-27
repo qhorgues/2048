@@ -407,16 +407,16 @@ static void DrawScore(struct Interface_SDL2 *interface, int score)
 
     char txt_score[12];
     snprintf(txt_score, 12, "%d", score);
-    int number_chr_score;
+    int index_font;
     if (score < 1000)
     {
-        number_chr_score = 3;
+        index_font = 3;
     }
     else 
     {
-        number_chr_score = (int)log10(score)+1;
+        index_font = 4;
     }
-    SDL_Surface *surface_txt = TTF_RenderText_Shaded(interface->number_font[number_chr_score], txt_score, WHITE, BOARD_COLOR);
+    SDL_Surface *surface_txt = TTF_RenderText_Shaded(interface->number_font[index_font], txt_score, WHITE, BOARD_COLOR);
     if (surface_txt == NULL)
     {
         printf("%s\n", TTF_GetError());
