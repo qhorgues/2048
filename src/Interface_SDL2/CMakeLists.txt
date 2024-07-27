@@ -56,12 +56,12 @@ if (WIN32)
 	# SDL2
   set_option(SDL2_DLL_DIR "SDL2_BINARY_DIR NOT FOUND" PATH "Path to SDL2.dll directory")
   configure_file(${SDL2_DLL_DIR}/SDL2.dll ${CMAKE_BINARY_DIR}/SDL2.dll COPYONLY)
-  install(FILES ${SDL2_DLL_DIR}/SDL2.dll DESTINATION .)
+  install(FILES ${SDL2_DLL_DIR}/SDL2.dll DESTINATION bin)
 	
 	# SDL2 ttf
 	set_option(SDL2_TTF_DLL_DIR "SDL2_TTF_BINARY_DIR NOT FOUND" PATH "Path to SDL2_ttf.dll directory")
   configure_file(${SDL2_TTF_DLL_DIR}/SDL2_ttf.dll ${CMAKE_BINARY_DIR}/SDL2_ttf.dll COPYONLY)
-  install(FILES ${SDL2_TTF_DLL_DIR}/SDL2_ttf.dll DESTINATION .)
+  install(FILES ${SDL2_TTF_DLL_DIR}/SDL2_ttf.dll DESTINATION bin)
 
 #  set_option(SDL2_IMAGE_DLL_DIR "SDL2_IMAGE_BINARY_DIR NOT FOUND" PATH "Path to SDL2_image.dll directory")
 #  configure_file(${SDL2_IMAGE_DLL_DIR}/SDL2_image.dll ${CMAKE_BINARY_DIR}/SDL2_image.dll COPYONLY)
@@ -73,28 +73,10 @@ if (WIN32)
 
 endif(WIN32)
 
-
-include(GNUInstallDirs)
-
-install(TARGETS ${PROJECT_NAME} DESTINATION .)
-install(DIRECTORY ${CMAKE_SOURCE_DIR}/assets/ DESTINATION assets)
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/assets/ DESTINATION bin/assets)
 
 foreach(df ${ASSETS})
-    file(COPY ${CMAKE_SOURCE_DIR}/${df} DESTINATION ${CMAKE_BINARY_DIR}/assets)
+    file(COPY ${CMAKE_SOURCE_DIR}/${df} DESTINATION /assets)
 endforeach()
 
-
-include(InstallRequiredSystemLibraries)
-set(CPACK_GENERATOR NSIS)
-set(CPACK_PACKAGE_NAME ${PROJECT_NAME})
-set(CPACK_PACKAGE_VERSION "${ABC_VERSION_MAJOR}.${ABC_VERSION_MINOR}")
-set(CPACK_PACKAGE_VERSION_PATCH "0")
-set(CPACK_PACKAGE_VENDOR "Quentin Horgues")
-set (CPACK_NSIS_MODIFY_PATH "ON")
-set(CPACK_SOURCE_GENERATOR "TGZ")
-set(CPACK_SOURCE_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}")
-set(CPACK_SOURCE_IGNORE_FILES ${CPACK_IGNORE_FILES})
-
-set(CPACK_PROJECT_NAME ${PROJECT_NAME})
-set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
-include(CPack)
+SET(CPACK_DEBIAN_PACKAGE_DEPENDS "libc6 libsdl2 libsdl2_ttf")
