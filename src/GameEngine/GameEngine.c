@@ -5,6 +5,8 @@
 
 #include "GameEngine.h"
 
+static void spawnRandomNumber(struct GameEngine * gameEngine);
+
 /**
  * @brief Initialise le jeu du 2048.
  * 
@@ -14,21 +16,32 @@ struct GameEngine initGameEngine(void)
 {
     struct GameEngine gameEngine;
     srand((unsigned int)time(NULL));
-    for (int x = 0; x < 4; x++)
-    {
-        for (int y = 0; y < 4; y++)
-        {
-            gameEngine.board[y][x] = 0;
-        }
-    }
+
+    memset(gameEngine.board, 0, sizeof(int) * 4 * 4);
 
     gameEngine.score = 0;
+
+    spawnRandomNumber(&gameEngine);
+    spawnRandomNumber(&gameEngine);
 
     return gameEngine;
 }
 
-static void spawnRandomNumber(struct GameEngine * gameEngine);
 
+
+/**
+ * @brief La fontion réinitialise le tableau.
+ * 
+ * @param[out] gameEngine Le jeu du  2048
+ */
+void resetGameEngine(struct GameEngine * gameEngine)
+{
+    memset(gameEngine->board, 0, sizeof(int) * 4 * 4);
+
+    gameEngine->score = 0;
+    spawnRandomNumber(&gameEngine);
+    spawnRandomNumber(&gameEngine);
+}
 
 
 
