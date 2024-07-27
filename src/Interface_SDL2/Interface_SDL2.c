@@ -412,7 +412,7 @@ static void DrawScore(struct Interface_SDL2 *interface, int score)
     {
         index_font = 3;
     }
-    else if (score > 1000000)
+    else if (score >= 1000000)
     {
         index_font = 5;
     }
