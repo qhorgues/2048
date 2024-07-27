@@ -2,13 +2,14 @@
 #define GAME_ENGINE_H
 
 #include <stdbool.h>
+#include "Interactions.h"
 
 /**
  * @brief Cette structure représente le jeu 2048.
  */
 struct GameEngine
 {
-  int array[4][4];
+  int board[4][4];
   int score;
 };
 
@@ -21,52 +22,13 @@ struct GameEngine
  */
 struct GameEngine initGameEngine(void);
 
-
-
 /**
- * @brief Fait apparaître un nombre dans le jeu.
+ * @brief Permet de faire un mouvement.
  * 
- * @param[in, out] gameEngine Le jeu du 2048.
+ * @param gameEngine[in, out] Le jeu du 2048.
+ * @param interaction[in] Le mouvement.
  */
-void spawnRandomNumber(struct GameEngine * gameEngine);
-
-
-
-/**
- * @brief Fait le déplacement du haut.
- * 
- * @param[in, out] gameEngine Le jeu du 2048.
- */
-void moveUp(struct GameEngine * gameEngine);
-
-
-
-/**
- * @brief Fait le déplacement du bas.
- * 
- * @param[in, out] gameEngine Le jeu du 2048.
- */
-void moveDown(struct GameEngine * gameEngine);
-
-
-
-/**
- * @brief Fait le déplacement à gauche.
- * 
- * @param[in, out] gameEngine Le jeu du 2048.
- */
-void moveLeft(struct GameEngine * gameEngine);
-
-
-
-/**
- * @brief Fait le jeu à droite.
- * 
- * @param[in, out] gameEngine Le jeu du 2048.
- */
-void moveRight(struct GameEngine * gameEngine);
-
-
+void move(struct GameEngine * gameEngine, enum Interactions interaction);
 
 /**
  * @brief Regarde si le jeu est fini.
