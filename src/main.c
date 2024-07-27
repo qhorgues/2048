@@ -19,6 +19,7 @@ char *removeExeInPath(char const *exe_path)
     return path;
 }
 
+void test(void);
 
 int main(int argc, char **argv)
 {
