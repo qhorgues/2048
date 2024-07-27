@@ -21,8 +21,6 @@ set (HEADERS
 
 set_sanitizer()
 
-add_subdirectory(${CMAKE_SOURCE_DIR}/src/GameEngine)
-
 option(BUILD_DOC "Build documentation" ON)
 if (BUILD_DOC)
 add_subdirectory(${CMAKE_SOURCE_DIR}/docs)
