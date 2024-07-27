@@ -1,4 +1,7 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "Interface.h"
 #include "Game/Game.h"
 
 #define UNUSED(x) ((void)(x))
@@ -18,7 +21,6 @@ char *removeExeInPath(char const *exe_path)
     }
     return path;
 }
-
 
 int main(int argc, char **argv)
 {

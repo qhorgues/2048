@@ -21,19 +21,21 @@ set (HEADERS
 
 set_sanitizer()
 
-add_subdirectory(${CMAKE_SOURCE_DIR}/src/GameEngine)
-add_subdirectory(${CMAKE_SOURCE_DIR}/src/Game)
 
 option(BUILD_DOC "Build documentation" ON)
 if (BUILD_DOC)
-    add_subdirectory(${CMAKE_SOURCE_DIR}/docs)
+add_subdirectory(${CMAKE_SOURCE_DIR}/docs)
 endif()
 
 set (CMAKE_C_STANDARD 17)
 set (CMAKE_C_STANDARD_REQUIRED ON)
 
+add_subdirectory(${CMAKE_SOURCE_DIR}/src/GameEngine)
+add_subdirectory(${CMAKE_SOURCE_DIR}/src/Game)
+add_subdirectory(${CMAKE_SOURCE_DIR}/src/Interface_SDL2)
+
 add_executable ( ${PROJECT_NAME} ${SRCS} ${HEADERS})
-target_link_libraries(${PROJECT_NAME} PUBLIC GameEngine Game)
+target_link_libraries(${PROJECT_NAME} PUBLIC GameEngine Game Interface_SDL2)
 set_target_warnings(${PROJECT_NAME})
 
 include(GNUInstallDirs)

@@ -47,7 +47,6 @@ void resetGameEngine(struct GameEngine * gameEngine)
  */
 static int randNewCase(void)
 {
-    srand(time(NULL));
     int r = rand();
     if (r < RAND_MAX / 10)
     {
