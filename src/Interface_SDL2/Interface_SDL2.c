@@ -35,6 +35,8 @@
 #define TILE_32768_COLOR ((SDL_Color){194, 20, 40, SDL_ALPHA_OPAQUE})
 #define TILE_65536_COLOR ((SDL_Color){38, 38, 38, SDL_ALPHA_OPAQUE})
 
+#define BOARD_COLOR ((SDL_Color){187, 173, 160, SDL_ALPHA_OPAQUE})
+
 
 typedef struct Interface_SDL2
 {
@@ -240,6 +242,38 @@ static void DrawTile(Interface_SDL2 *interface, int tile, int index_x, int index
                                                     backgroud[tile-1], 
                                                     text_color, 
                                                     interface->number_font[numberChr], int_to_chr);
+    }
+}
+
+void DrawBoard(Interface_SDL2 *interface, int (*board)[4])
+{
+    SDL_Rect rect_board = {.x = MARGIN_WITH_BOARD, .y = MARGIN_TOP_WITH_BOARD, .w = SIZE_BOARD, .h = SIZE_BOARD};
+    SDL_Rect rect_background_board = {.x = 0, .y = MARGIN_TOP_WITH_BOARD - MARGIN_WITH_BOARD, .w = WINDOW_WIDTH, .h = SIZE_BOARD + (2*MARGIN_WITH_BOARD)};
+    SDL_SetRenderDrawColor(interface->renderer, WHITE.r, WHITE.g, WHITE.b, SDL_ALPHA_OPAQUE);
+    SDL_RenderFillRect(interface->renderer, &rect_background_board);
+    SDL_SetRenderDrawColor(interface->renderer, BOARD_COLOR.r, BOARD_COLOR.g, BOARD_COLOR.b, SDL_ALPHA_OPAQUE);
+    SDL_RenderFillRoudedRect(interface->renderer, &rect_board, RADIUS_BOARD);
+
+    for (int i = 0; i < 4; i++)
+    {
+        for (int j = 0; j < 4; j++)
+        {
+            DrawTile(interface, board[i][j], i, j);
+        }
+    }
+}
+
+enum Interactions getInteraction(Interface* interface, enum GameStatus* status)
+{
+    SDL_Event event;
+    bool interaction = false;
+    while(!interaction)
+    {
+        SDL_WaitEvent(&event);
+        switch (event.type)
+        {
+            
+        }
     }
 }
 
