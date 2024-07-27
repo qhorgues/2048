@@ -1,7 +1,7 @@
 #include <stdbool.h>
 
-#include "Interface.h"
-#include "GameEngine/GameEngine.h"
+#include "../Interface.h"
+#include "../GameEngine/GameEngine.h"
 
 void run(char const* current_dir)
 {
