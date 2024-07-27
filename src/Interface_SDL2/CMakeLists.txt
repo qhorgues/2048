@@ -72,7 +72,7 @@ if (WIN32)
 #  install(FILES ${SDL2_MIXER_DLL_DIR}/SDL2_mixer.dll DESTINATION .)
 
   foreach(df ${ASSETS})
-      configure_file(${CMAKE_SOURCE_DIR}/${df} ${CMAKE_BINARY_DIR}/${df} COPYONLY)
+      configure_file(${df} ${CMAKE_BINARY_DIR}/${df} COPYONLY)
   endforeach()
   
 
