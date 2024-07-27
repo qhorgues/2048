@@ -412,6 +412,10 @@ static void DrawScore(struct Interface_SDL2 *interface, int score)
     {
         index_font = 3;
     }
+    else if (score > 1000000)
+    {
+        index_font = 5;
+    }
     else 
     {
         index_font = 4;
@@ -432,8 +436,7 @@ static void DrawScore(struct Interface_SDL2 *interface, int score)
     score_txt_rect.x =  rect_tile.x + rect_tile.w / 2 - score_txt_rect.w / 2;
     score_txt_rect.y = rect_tile.y + rect_tile.h / 2 - score_txt_rect.h / 2 +12;
     SDL_RenderCopy(interface->renderer, texture_score, NULL, &score_txt_rect);
-
-
+    SDL_DestroyTexture(texture_score);
 }
 
 static void updateInGame(struct Interface_SDL2 *interface, struct GameEngine const *gameEngine)
