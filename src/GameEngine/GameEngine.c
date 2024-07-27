@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <stdbool.h>
-
+#include <memory.h>
 #include "GameEngine.h"
 
 static void spawnRandomNumber(struct GameEngine * gameEngine);
@@ -34,8 +34,8 @@ void resetGameEngine(struct GameEngine * gameEngine)
     memset(gameEngine->board, 0, sizeof(int) * 4 * 4);
 
     gameEngine->score = 0;
-    spawnRandomNumber(&gameEngine);
-    spawnRandomNumber(&gameEngine);
+    spawnRandomNumber(gameEngine);
+    spawnRandomNumber(gameEngine);
 }
 
 
