@@ -102,7 +102,7 @@ static bool moves(struct GameEngine * gameEngine, int * invalidPlaces, int value
     if (*invalidPlaces > 0 && !merge && value == gameEngine->board[changeYMerge][changeXMerge])
     {   
         gameEngine->board[changeYMerge][changeXMerge]++;
-        gameEngine->score += gameEngine->board[changeYMerge][changeXMerge];
+        gameEngine->score += 1 << gameEngine->board[changeYMerge][changeXMerge];
         (*invalidPlaces)--;
         return true;
     }
