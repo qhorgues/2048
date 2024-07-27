@@ -1,9 +1,9 @@
-#include "GameEngine.h"
 
 #include <stdlib.h>
 #include <time.h>
 #include <stdbool.h>
 
+#include "GameEngine.h"
 
 /**
  * @brief Initialise le jeu du 2048.
@@ -26,6 +26,9 @@ struct GameEngine initGameEngine(void)
 
     return gameEngine;
 }
+
+static void spawnRandomNumber(struct GameEngine * gameEngine);
+
 
 
 
@@ -55,7 +58,7 @@ static int randNewCase(void)
  * 
  * @param[in, out] gameEngine Le jeu du 2048.
  */
-void spawnRandomNumber(struct GameEngine * gameEngine)
+static void spawnRandomNumber(struct GameEngine * gameEngine)
 {
     int randomNumber = randNewCase();
     int poseX = rand() % 4;
@@ -105,7 +108,7 @@ static void moves(struct GameEngine * gameEngine, int * invalidPlaces, int value
  * 
  * @param[in, out] gameEngine Le jeu du 2048.
  */
-void moveUp(struct GameEngine * gameEngine)
+static void moveUp(struct GameEngine * gameEngine)
 {
     for (int x = 0; x < 4; x++)
     {
@@ -135,7 +138,7 @@ void moveUp(struct GameEngine * gameEngine)
  * 
  * @param[in, out] gameEngine Le jeu du 2048.
  */
-void moveDown(struct GameEngine * gameEngine)
+static void moveDown(struct GameEngine * gameEngine)
 {
     for (int x = 0; x < 4; x++)
     {
@@ -165,7 +168,7 @@ void moveDown(struct GameEngine * gameEngine)
  * 
  * @param[in, out] gameEngine Le jeu du 2048.
  */
-void moveLeft(struct GameEngine * gameEngine)
+static void moveLeft(struct GameEngine * gameEngine)
 {
     for (int y = 0; y < 4; y++)
     {
@@ -195,7 +198,7 @@ void moveLeft(struct GameEngine * gameEngine)
  * 
  * @param[in, out] gameEngine Le jeu du 2048.
  */
-void moveRight(struct GameEngine * gameEngine)
+static void moveRight(struct GameEngine * gameEngine)
 {
     for (int y = 0; y < 4; y++)
     {
@@ -218,6 +221,33 @@ void moveRight(struct GameEngine * gameEngine)
     }
 }
 
+
+/**
+ * @brief Permet de faire un mouvement.
+ * 
+ * @param gameEngine[in, out] Le jeu du 2048.
+ * @param interaction[in] Le mouvement.
+ */
+void move(struct GameEngine * gameEngine, enum Interactions interaction)
+{
+    switch (interaction)
+    {
+    case INTERACTION_MOVE_UP:
+        moveUp(gameEngine);
+        break;
+    case INTERACTION_MOVE_DOWN:
+        moveDown(gameEngine);
+        break;
+    case INTERACTION_MOVE_LEFT:
+        moveLeft(gameEngine);
+        break;
+    case INTERACTION_MOVE_RIGHT:
+        moveRight(gameEngine);
+        break;
+    default:
+        break;
+    }
+}
 
 
 /**
