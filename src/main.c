@@ -21,10 +21,18 @@ char *removeExeInPath(char const *exe_path)
     return path;
 }
 
+void test(void);
+
 int main(int argc, char **argv)
 {
     UNUSED(argc);
     char *str = removeExeInPath(argv[0]);
+    Interface* interface = initInterface(str);
+    struct GameEngine engine = initGameEngine();
+
+    update(interface, IN_GAME, &engine);
+    test();
+
     free(str);
     return 0;
 }
