@@ -30,7 +30,6 @@ void run(char const* current_dir)
         {
             gameStatus = END_MENU;
             update(interface, gameStatus, &engine);
-            break;
         }
     }
     freeInterface(interface);
