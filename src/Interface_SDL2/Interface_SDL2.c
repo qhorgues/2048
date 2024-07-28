@@ -27,6 +27,7 @@
 #define POS_INFO (WINDOW_WIDTH - 2*SIZE_LOGO - 4*MARGIN_LOGO)
 
 #define WHITE ((SDL_Color){255, 255, 255, SDL_ALPHA_OPAQUE})
+#define BLACK ((SDL_Color){0, 0, 0, SDL_ALPHA_OPAQUE})
 #define TILE_2_4_TEXT_COLOR ((SDL_Color){119, 110, 101, SDL_ALPHA_OPAQUE})
 
 #define TILE_EMPTY_COLOR ((SDL_Color){205, 193, 181, SDL_ALPHA_OPAQUE})
@@ -46,12 +47,22 @@
 #define TILE_16384_COLOR ((SDL_Color){93, 193, 193, SDL_ALPHA_OPAQUE})
 #define TILE_32768_COLOR ((SDL_Color){194, 20, 40, SDL_ALPHA_OPAQUE})
 #define TILE_65536_COLOR ((SDL_Color){38, 38, 38, SDL_ALPHA_OPAQUE})
+#define TILE_131072_COLOR ((SDL_Color){255, 215, 0, SDL_ALPHA_OPAQUE})
+
+#define NUMBER_FONT 7
 
 #define BOARD_COLOR ((SDL_Color){187, 173, 160, SDL_ALPHA_OPAQUE})
 #define COLOR_TEXT_SCORE ((SDL_Color){233, 225, 211, SDL_ALPHA_OPAQUE})
 
-#define NUMBER_BUTTON 1
-#define NUMBER_FONT 7
+#define END_POP_UP_WIDTH (2*(WINDOW_WIDTH /3))
+#define END_POP_UP_HEIGHT (WINDOW_HEIGHT /2)
+
+#define INDEX_BUTTON_IN_GAME 0
+#define END_INDEX_BUTTON_IN_GAME 1 // exclu
+#define INDEX_BUTTON_END_GAME 1
+#define END_INDEX_BUTTON_END_GAME 3 // exclu
+
+#define NUMBER_BUTTON END_INDEX_BUTTON_END_GAME
 
 #define UNUSED(x) ((void)(x))
 
@@ -60,7 +71,7 @@ struct Button
     SDL_Texture* texture_button;
     SDL_Rect rect;
     SDL_Color color_button;
-    void (*active_button) (struct GameEngine*, enum GameStatus*);
+    //void (*active_button) (struct GameEngine*, enum GameStatus*);
 };
 
 struct Interface_SDL2
@@ -75,13 +86,7 @@ struct Interface_SDL2
     struct Button* buttons[NUMBER_BUTTON];
 };
 
-static void replayButton(struct GameEngine *gameEngine, enum GameStatus *status)
-{
-    UNUSED(status);
-    resetGameEngine(gameEngine);
-}
-
-static struct Button* initButton(SDL_Renderer* renderer, SDL_Rect const* position, char const* text, TTF_Font* font, SDL_Color text_color, SDL_Color color_button, void (*active_button) (struct GameEngine*, enum GameStatus*))
+static struct Button* initButton(SDL_Renderer* renderer, SDL_Rect const* position, char const* text, TTF_Font* font, SDL_Color text_color, SDL_Color color_button)
 {
     struct Button* button = malloc(sizeof(struct Button));
     if (button == NULL)
@@ -105,7 +110,6 @@ static struct Button* initButton(SDL_Renderer* renderer, SDL_Rect const* positio
     }
     button->rect = *position;
     button->color_button = color_button;
-    button->active_button = active_button;
     return button;
 }
 
@@ -180,7 +184,13 @@ Interface *initInterface(char const *dir_exe)
     interface->text_score = NULL;
 
     SDL_Rect pos_button_replay = {.x = POS_INFO, .y = 2*MARGIN_LOGO + 2*(SIZE_LOGO / 3), .w = SIZE_LOGO, .h = SIZE_LOGO/3 - MARGIN_LOGO};
-    interface->buttons[0] = initButton(interface->renderer, &pos_button_replay, "Rejouer", interface->number_font[5], (SDL_Color) {255, 255, 255, 255}, TILE_2048_COLOR, &replayButton);
+    interface->buttons[0] = initButton(interface->renderer, &pos_button_replay, "Rejouer", interface->number_font[5], (SDL_Color) {255, 255, 255, 255}, TILE_2048_COLOR);
+
+    SDL_Rect pos_button_restart = {.x = WINDOW_WIDTH / 6 + 6, .y = WINDOW_HEIGHT / 2 + 20, .w = END_POP_UP_WIDTH / 2 - 9, .h = WINDOW_HEIGHT / 2 - END_POP_UP_HEIGHT / 2 -26};
+    interface->buttons[1] = initButton(interface->renderer, &pos_button_restart, "Rejouer", interface->number_font[3], WHITE, TILE_2048_COLOR);
+
+    SDL_Rect pos_button_quit = {.x = WINDOW_WIDTH / 6 + END_POP_UP_WIDTH / 2 + 3, .y = WINDOW_HEIGHT / 2 + 20, .w = END_POP_UP_WIDTH / 2 - 9, .h = WINDOW_HEIGHT / 2 - END_POP_UP_HEIGHT / 2 -26};
+    interface->buttons[2] = initButton(interface->renderer, &pos_button_quit, "Quitter", interface->number_font[3], WHITE, TILE_2048_COLOR);
 
     return interface;
 }
@@ -289,7 +299,7 @@ static void DrawTile(struct Interface_SDL2 *interface, int tile, int index_x, in
         SDL_RenderFillRoudedRect(interface->renderer, &rect_tile, RADIUS_TILE);
         return;
     }
-    SDL_Color backgroud[16] = {
+    SDL_Color backgroud[17] = {
         TILE_2_COLOR,
         TILE_4_COLOR,
         TILE_8_COLOR,
@@ -305,7 +315,8 @@ static void DrawTile(struct Interface_SDL2 *interface, int tile, int index_x, in
         TILE_8192_COLOR,
         TILE_16384_COLOR,
         TILE_32768_COLOR,
-        TILE_65536_COLOR};
+        TILE_65536_COLOR,
+        TILE_131072_COLOR};
     SDL_Color text_color;
     if (tile > 2)
     {
@@ -440,12 +451,107 @@ static void DrawScore(struct Interface_SDL2 *interface, int score)
     SDL_DestroyTexture(texture_score);
 }
 
+void DrawScoreEnd(struct Interface_SDL2 *interface, int score)
+{
+    SDL_Surface *surface_txt = TTF_RenderUTF8_Shaded(interface->number_font[3], "Terminée", BLACK, WHITE);
+    if (surface_txt == NULL)
+    {
+        printf("%s\n", TTF_GetError());
+    }
+    SDL_Texture* texture_end = SDL_CreateTextureFromSurface(interface->renderer, surface_txt);
+    SDL_FreeSurface(surface_txt);
+    if (texture_end  == NULL)
+    {
+        printf("%s\n", TTF_GetError());
+    }
+    SDL_Rect end_txt_rect;
+    SDL_QueryTexture(texture_end , NULL, NULL, &(end_txt_rect.w), &(end_txt_rect.h));
+    end_txt_rect.x =  WINDOW_WIDTH / 2  - end_txt_rect.w / 2;
+    end_txt_rect.y = WINDOW_HEIGHT / 2 - END_POP_UP_HEIGHT / 2 + 10;
+    SDL_RenderCopy(interface->renderer, texture_end, NULL, &end_txt_rect);
+    SDL_DestroyTexture(texture_end);
+
+    int height_first_line = end_txt_rect.h;
+    surface_txt = TTF_RenderUTF8_Shaded(interface->number_font[4], "Votre score est de :", BLACK, WHITE);
+    if (surface_txt == NULL)
+    {
+        printf("%s\n", TTF_GetError());
+    }
+    texture_end = SDL_CreateTextureFromSurface(interface->renderer, surface_txt);
+    SDL_FreeSurface(surface_txt);
+    if (texture_end  == NULL)
+    {
+        printf("%s\n", TTF_GetError());
+    }
+    SDL_QueryTexture(texture_end , NULL, NULL, &(end_txt_rect.w), &(end_txt_rect.h));
+    end_txt_rect.x =  WINDOW_WIDTH / 2  - end_txt_rect.w / 2;
+    end_txt_rect.y = WINDOW_HEIGHT / 2 - END_POP_UP_HEIGHT / 2 + height_first_line + 15;
+    SDL_RenderCopy(interface->renderer, texture_end, NULL, &end_txt_rect);
+    SDL_DestroyTexture(texture_end);
+    
+    height_first_line += end_txt_rect.h;
+
+    char txt_score[12];
+    snprintf(txt_score, 12, "%d", score);
+    surface_txt = TTF_RenderText_Shaded(interface->number_font[2], txt_score, BLACK, WHITE);
+    if (surface_txt == NULL)
+    {
+        printf("%s\n", TTF_GetError());
+    }
+    SDL_Texture* texture_score = SDL_CreateTextureFromSurface(interface->renderer, surface_txt);
+    SDL_FreeSurface(surface_txt);
+    if (texture_score == NULL)
+    {
+        printf("%s\n", TTF_GetError());
+    }
+    SDL_Rect score_txt_rect;
+    SDL_QueryTexture(texture_score, NULL, NULL, &(score_txt_rect.w), &(score_txt_rect.h));
+    score_txt_rect.x =  WINDOW_WIDTH / 2  - score_txt_rect.w / 2;
+    score_txt_rect.y = WINDOW_HEIGHT / 2 - END_POP_UP_HEIGHT / 2 + height_first_line + 20;
+    SDL_RenderCopy(interface->renderer, texture_score, NULL, &score_txt_rect);
+    SDL_DestroyTexture(texture_score);
+}
+
+void popUp(struct Interface_SDL2 *interface, int width, int height) {
+    SDL_Rect background;
+    background.x = 0;
+    background.y = 0;
+    background.w = WINDOW_WIDTH;
+    background.h = WINDOW_HEIGHT;
+
+    SDL_SetRenderDrawColor(interface->renderer, 0, 0, 0, 150);
+    SDL_SetRenderDrawBlendMode(interface->renderer, SDL_BLENDMODE_BLEND);
+    SDL_RenderFillRect(interface->renderer, &background);
+
+    background.w = width;
+    background.h = height;
+    background.x = (WINDOW_WIDTH/2) - background.w/2;
+    background.y = (WINDOW_HEIGHT/2) - background.h/2;
+
+    SDL_SetRenderDrawColor(interface->renderer, WHITE.r, WHITE.g, WHITE.b, SDL_ALPHA_OPAQUE);
+    SDL_RenderFillRect(interface->renderer, &background);
+    SDL_SetRenderDrawColor(interface->renderer, BLACK.r, BLACK.g, BLACK.b, SDL_ALPHA_OPAQUE);
+    SDL_RenderDrawRect(interface->renderer, &background);
+    SDL_SetRenderDrawBlendMode(interface->renderer, SDL_BLENDMODE_NONE);
+}
+
 static void updateInGame(struct Interface_SDL2 *interface, struct GameEngine const *gameEngine)
 {
     DrawLogo(interface);
     DrawScore(interface, gameEngine->score);
     renderButton(interface->renderer, interface->buttons[0]);
     DrawBoard(interface, gameEngine->board);
+}
+
+static void updateEndGame(struct Interface_SDL2 *interface, struct GameEngine const *gameEngine)
+{
+    updateInGame(interface, gameEngine);
+    popUp(interface, END_POP_UP_WIDTH, END_POP_UP_HEIGHT);
+    DrawScoreEnd(interface, gameEngine->score);
+    for (int i = INDEX_BUTTON_END_GAME; i < END_INDEX_BUTTON_END_GAME; i++)
+    {
+        renderButton(interface->renderer, interface->buttons[i]);
+    }
 }
 
 void update(Interface *interface, enum GameStatus status, struct GameEngine const *gameEngine)
@@ -458,10 +564,18 @@ void update(Interface *interface, enum GameStatus status, struct GameEngine cons
     case IN_GAME:
         updateInGame(inter, gameEngine);
         break;
+    case END_MENU:
+        updateEndGame(inter, gameEngine);
+        break;
     default:
         break;
     }
     SDL_RenderPresent(inter->renderer);
+}
+
+static void replayButton(struct GameEngine *gameEngine)
+{
+    resetGameEngine(gameEngine);
 }
 
 enum Interactions getInteraction(Interface *interface, enum GameStatus *status, struct GameEngine *gameEngine)
@@ -535,15 +649,28 @@ enum Interactions getInteraction(Interface *interface, enum GameStatus *status, 
         case SDL_MOUSEBUTTONDOWN:
             if (event.button.button == SDL_BUTTON_LEFT)
             {
-                for (int i = 0; i < NUMBER_BUTTON; i++)
+                if (*status == IN_GAME)
                 {
-                    if (checkIfPressedButton(inter->buttons[i], event.button.x, event.button.y))
+                    if (checkIfPressedButton(inter->buttons[0], event.button.x, event.button.y))
                     {
-                        inter->buttons[i]->active_button(gameEngine, status);
-                        break;
+                        replayButton(gameEngine);
+                        update(interface, *status, gameEngine); 
                     }
                 }
-                update(interface, *status, gameEngine);
+                else if (*status == END_MENU)
+                {
+                    if (checkIfPressedButton(inter->buttons[1], event.button.x, event.button.y))
+                    {
+                        *status = IN_GAME;
+                        replayButton(gameEngine);
+                        update(interface, *status, gameEngine); 
+                    }
+
+                    if (checkIfPressedButton(inter->buttons[2], event.button.x, event.button.y))
+                    {
+                        return INTERACTION_QUIT;
+                    }
+                }
             }
             break;
         default:
