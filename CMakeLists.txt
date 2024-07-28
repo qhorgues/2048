@@ -1,6 +1,6 @@
 cmake_minimum_required (VERSION 3.20)
 
-project (2048 LANGUAGES C VERSION 0.1)
+project (2048 LANGUAGES C VERSION 0.2)
 
 #include(CTest)
 #enable_testing()
