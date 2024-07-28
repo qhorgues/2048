@@ -64,6 +64,11 @@
 
 #define NUMBER_BUTTON END_INDEX_BUTTON_END_GAME
 
+#define KEY_UP 0
+#define KEY_DOWN 1
+#define KEY_LEFT 2
+#define KEY_RIGHT 3
+
 #define UNUSED(x) ((void)(x))
 
 struct Button
@@ -596,33 +601,43 @@ enum Interactions getInteraction(Interface *interface, enum GameStatus *status, 
             switch (event.key.keysym.scancode)
             {
             case SDL_SCANCODE_UP:
-                if (!inter->key_pressed[0])
+                if (!inter->key_pressed[KEY_UP])
                 { 
-                    inter->key_pressed[0] = true;
+                    inter->key_pressed[KEY_UP] = true;
                     return INTERACTION_MOVE_UP;
                 }
                 break;
             case SDL_SCANCODE_DOWN:
-                if (!inter->key_pressed[1])
+                if (!inter->key_pressed[KEY_DOWN])
                 { 
-                    inter->key_pressed[1] = true;
+                    inter->key_pressed[KEY_DOWN] = true;
                     return INTERACTION_MOVE_DOWN;
                 }
                 break;
             case SDL_SCANCODE_LEFT:
-                if (!inter->key_pressed[2])
+                if (!inter->key_pressed[KEY_LEFT])
                 { 
-                    inter->key_pressed[2] = true;
+                    inter->key_pressed[KEY_LEFT] = true;
                     return INTERACTION_MOVE_LEFT;
                 }
                 break;
             case SDL_SCANCODE_RIGHT:
-                if (!inter->key_pressed[3])
+                if (!inter->key_pressed[KEY_RIGHT])
                 { 
-                    inter->key_pressed[3] = true;
+                    inter->key_pressed[KEY_RIGHT] = true;
                     return INTERACTION_MOVE_RIGHT;
                 }
                 break;
+            case SDL_SCANCODE_KP_ENTER:
+                if ((*status) == END_MENU)
+                {
+                    *status = IN_GAME;
+                    replayButton(gameEngine);
+                    update(interface, *status, gameEngine); 
+                }
+                break;
+            case SDL_SCANCODE_ESCAPE:
+                return INTERACTION_QUIT;
             default:
                 break;
             }
@@ -631,16 +646,16 @@ enum Interactions getInteraction(Interface *interface, enum GameStatus *status, 
             switch (event.key.keysym.scancode)
             {
             case SDL_SCANCODE_UP:
-                inter->key_pressed[0] = false;
+                inter->key_pressed[KEY_UP] = false;
                 break;
             case SDL_SCANCODE_DOWN:
-                inter->key_pressed[1] = false;
+                inter->key_pressed[KEY_DOWN] = false;
                 break;
             case SDL_SCANCODE_LEFT:
-                inter->key_pressed[2] = false;
+                inter->key_pressed[KEY_LEFT] = false;
                 break;
             case SDL_SCANCODE_RIGHT:
-                inter->key_pressed[3] = false;
+                inter->key_pressed[KEY_RIGHT] = false;
                 break;
             default:
                 break;
