@@ -28,7 +28,7 @@ void run(char const* current_dir)
         }
         if (isEnding(&engine))
         {
-            break;
+            //break;
         }
     }
     freeInterface(interface);
