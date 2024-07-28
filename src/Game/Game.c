@@ -28,7 +28,9 @@ void run(char const* current_dir)
         }
         if (isEnding(&engine))
         {
-            //break;
+            gameStatus = END_MENU;
+            update(interface, gameStatus, &engine);
+            break;
         }
     }
     freeInterface(interface);
