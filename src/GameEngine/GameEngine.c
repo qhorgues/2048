@@ -312,7 +312,9 @@ bool isEnding(struct GameEngine const *gameEngine)
     }
     for (int i = 0; i < 3; i++)
     {
-        if (gameEngine->board[3][i] == gameEngine->board[3][i+1] || gameEngine->board[i][3] == gameEngine->board[i+1][3])
+        if (gameEngine->board[3][i] == 0 || gameEngine->board[i][3] == 0
+            || gameEngine->board[3][i] == gameEngine->board[3][i+1] 
+            || gameEngine->board[i][3] == gameEngine->board[i+1][3])
         {
             return false;
         }
