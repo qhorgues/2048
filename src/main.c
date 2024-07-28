@@ -21,7 +21,7 @@ char *removeExeInPath(char const *exe_path)
     return path;
 }
 
-void test(void);
+void test(Interface *interface, struct GameEngine *gameEngine, enum GameStatus status);
 
 int main(int argc, char **argv)
 {
@@ -31,7 +31,7 @@ int main(int argc, char **argv)
     struct GameEngine engine = initGameEngine();
 
     update(interface, IN_GAME, &engine);
-    test();
+    test(interface, &engine, END_MENU);
 
     free(str);
     return 0;
