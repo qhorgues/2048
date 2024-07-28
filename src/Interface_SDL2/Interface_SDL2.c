@@ -175,6 +175,7 @@ Interface *initInterface(char const *dir_exe)
 
     memset(interface->texture_number, 0, 16 * sizeof(SDL_Texture *));
     memset(interface->key_pressed, 0, 4 * sizeof(bool));
+    memset(interface->buttons, 0, sizeof(struct Button*) * NUMBER_BUTTON);
     interface->text_logo = NULL;
     interface->text_score = NULL;
 
@@ -554,11 +555,11 @@ enum Interactions getInteraction(Interface *interface, enum GameStatus *status, 
 void freeInterface(Interface *interface)
 {
     struct Interface_SDL2 *inter = interface;
-    if (inter->text_logo != NULL)
+    if (inter->text_logo)
     {
         SDL_DestroyTexture(inter->text_logo);
     }
-    if (inter->text_score != NULL)
+    if (inter->text_score)
     {
         SDL_DestroyTexture(inter->text_score);
     }
@@ -569,9 +570,12 @@ void freeInterface(Interface *interface)
             TTF_CloseFont(inter->number_font[i]);
         }
     }
-    for (int i = 1; i < NUMBER_BUTTON; i++)
+    for (int i = 0; i < NUMBER_BUTTON; i++)
     {
-        freeButton(inter->buttons[i]);
+        if (inter->buttons[i])
+        {
+            freeButton(inter->buttons[i]);
+        }
     }
     for (int i = 0; i < 16; i++)
     {
@@ -592,9 +596,4 @@ void freeInterface(Interface *interface)
     free(inter);
     TTF_Quit();
     SDL_Quit();
-}
-
-void test(void)
-{
-    SDL_Delay(5000);
 }
