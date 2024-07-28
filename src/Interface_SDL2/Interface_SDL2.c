@@ -628,6 +628,7 @@ enum Interactions getInteraction(Interface *interface, enum GameStatus *status, 
                     return INTERACTION_MOVE_RIGHT;
                 }
                 break;
+            case SDL_SCANCODE_EXECUTE:
             case SDL_SCANCODE_KP_ENTER:
                 if ((*status) == END_MENU)
                 {
