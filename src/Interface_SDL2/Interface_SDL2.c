@@ -102,7 +102,7 @@ struct Interface_SDL2
     SDL_Texture* text_logo;
     SDL_Texture* text_score;
     TTF_Font *number_font[NUMBER_FONT];
-    SDL_Texture *texture_number[16];
+    SDL_Texture *texture_number[17];
     bool key_pressed[4];
     struct Button* buttons[NUMBER_BUTTON];
     int index_history;
