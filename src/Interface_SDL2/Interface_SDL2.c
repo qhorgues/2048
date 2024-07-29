@@ -306,6 +306,28 @@ static int SDL_RenderFillRoudedRect(SDL_Renderer *renderer, SDL_Rect const *rect
     return 0;
 }
 
+static SDL_Texture* loadBlendedText(
+    SDL_Renderer *renderer,
+    SDL_Color textcolor,
+    TTF_Font *font,
+    char const *text)
+{
+    SDL_Surface *surface_txt = TTF_RenderText_Blended(font, text, textcolor);
+    if (surface_txt == NULL)
+    {
+        printf("%s\n", TTF_GetError());
+        return NULL;
+    }
+    SDL_Texture *texture_text = SDL_CreateTextureFromSurface(renderer, surface_txt);
+    SDL_FreeSurface(surface_txt);
+    if (texture_text == NULL)
+    {
+        printf("%s\n", TTF_GetError());
+        return NULL;
+    }
+    return texture_text;
+}
+
 static SDL_Texture* loadShadedText(
     SDL_Renderer *renderer,
     SDL_Color background,
@@ -600,6 +622,13 @@ static void updateHistory(struct Interface_SDL2 *interface, struct GameEngine co
     {
         popUp(interface, WINDOW_WIDTH - 2*MARGIN_WITH_BOARD + 6, SIZE_BOARD+7);
         struct PastGame const* game = gameEngine->gameHistory.game[interface->index_history];
+        SDL_Texture* text = loadBlendedText(interface->renderer, WHITE, interface->number_font[3], "Vos records");
+        SDL_Rect rect_text;
+        SDL_QueryTexture(text, NULL, NULL, &rect_text.w, &rect_text.h);
+        rect_text.x = WINDOW_WIDTH /2 - rect_text.w /2;
+        rect_text.y = 5;
+        SDL_RenderCopy(interface->renderer, text, NULL, &rect_text);
+        SDL_DestroyTexture(text);
 
         DrawBoard(interface, game->board, MARGIN_HISTORY_BOARD);
     }
