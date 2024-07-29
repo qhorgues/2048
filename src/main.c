@@ -4,6 +4,8 @@
 
 #define UNUSED(x) ((void)(x))
 
+char* createFolder(void);
+
 char *removeExeInPath(char const *exe_path)
 {
     size_t len_path = strlen(exe_path);
@@ -24,7 +26,10 @@ char *removeExeInPath(char const *exe_path)
 int main(int argc, char **argv)
 {
     UNUSED(argc);
-    char *str = removeExeInPath(argv[0]);
-    free(str);
+    char *path_exe = removeExeInPath(argv[0]);
+    char* user_folder = createFolder();
+    printf("%s\n", user_folder);
+    free(user_folder);
+    free(path_exe);
     return 0;
 }
