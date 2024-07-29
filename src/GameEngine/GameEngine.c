@@ -24,7 +24,6 @@ struct GameEngine initGameEngine(void)
     return gameEngine;
 }
 
-
 /**
  * @brief La fontion réinitialise le tableau.
  * 
