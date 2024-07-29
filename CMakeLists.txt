@@ -33,7 +33,11 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/src/GameEngine)
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/Game)
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/Interface_SDL2)
 
-add_executable ( ${PROJECT_NAME} ${SRCS} ${HEADERS})
+if (WIN32)
+    set(ICONE 2048.rc)
+endif()
+
+add_executable ( ${PROJECT_NAME} ${SRCS} ${HEADERS} ${ICONE})
 target_link_libraries(${PROJECT_NAME} PUBLIC Game GameEngine Interface_SDL2)
 set_target_warnings(${PROJECT_NAME})
 
