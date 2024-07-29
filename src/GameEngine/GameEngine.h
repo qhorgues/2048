@@ -3,6 +3,7 @@
 
 #include <stdbool.h>
 #include "../Interactions.h"
+#include "GameHistory.h"
 
 /**
  * @brief Cette structure représente le jeu 2048.
@@ -11,6 +12,7 @@ struct GameEngine
 {
   int board[4][4];
   int score;
+  struct GameHistory gameHistory;
 };
 
 
