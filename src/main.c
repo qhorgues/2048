@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include "Game/Game.h"
 
+#include "GameEngine/GameEngine.h"
+
 #define UNUSED(x) ((void)(x))
 
 char *removeExeInPath(char const *exe_path)

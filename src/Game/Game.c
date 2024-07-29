@@ -29,8 +29,10 @@ void run(char const* current_dir)
         if (isEnding(&engine))
         {
             gameStatus = END_MENU;
+            checkIfNewBestScore(&engine);
             update(interface, gameStatus, &engine);
         }
     }
     freeInterface(interface);
+    freeGameEngine(&engine);
 }

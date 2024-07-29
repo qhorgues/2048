@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <memory.h>
 #include "GameEngine.h"
+#include "GameHistory.h"
 
 static void spawnRandomNumber(struct GameEngine * gameEngine);
 
@@ -15,13 +16,13 @@ static void spawnRandomNumber(struct GameEngine * gameEngine);
 struct GameEngine initGameEngine(void)
 {
     struct GameEngine gameEngine;
+    gameEngine.gameHistory = initGameHistory();
     srand((unsigned int)time(NULL));
 
     resetGameEngine(&gameEngine);
 
     return gameEngine;
 }
-
 
 
 /**
@@ -289,6 +290,8 @@ void move(struct GameEngine * gameEngine, enum Interactions interaction)
     case INTERACTION_MOVE_RIGHT:
         moveApplied = moveRight(gameEngine);
         break;
+    case INTERACTION_CHANGE_GAME_STATUS:
+    case INTERACTION_QUIT:
     default:
         break;
     }
@@ -332,4 +335,16 @@ bool isEnding(struct GameEngine const *gameEngine)
         }
     }
     return true;
+}
+
+
+
+/**
+ * @brief Cette fonction libère le jeu du 2048.
+ * 
+ * @param gameEngine Le jeu du 2048. 
+ */
+void freeGameEngine(struct GameEngine * gameEngine)
+{
+    freeGameHistory(&(gameEngine->gameHistory));
 }
