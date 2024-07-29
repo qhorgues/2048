@@ -36,7 +36,7 @@
 #define RADIUS_BOARD RADIUS_TILE
 #define RADIUS_BUTTON RADIUS_TILE
 #define MARGIN_TOP_WITH_BOARD (WINDOW_HEIGHT - SIZE_BOARD - MARGIN_WITH_BOARD)
-#define POS_INFO (WINDOW_WIDTH - 2*SIZE_LOGO - 2*MARGIN_LOGO) - 20
+#define POS_INFO (WINDOW_WIDTH - 2*SIZE_LOGO - 3*MARGIN_LOGO)
 #define MARGIN_SCORE_HIGHTSCORE 10
 #define MARGIN_HISTORY_BOARD  (WINDOW_HEIGHT - SIZE_BOARD)/2
 
@@ -601,7 +601,6 @@ static void updateHistory(struct Interface_SDL2 *interface, struct GameEngine co
         popUp(interface, WINDOW_WIDTH - 2*MARGIN_WITH_BOARD + 6, SIZE_BOARD+7);
         struct PastGame const* game = gameEngine->gameHistory.game[interface->index_history];
 
-        DrawScore(interface, gameEngine->gameHistory.game[interface->index_history]->score, POS_INFO, MARGIN_LOGO, "SCORE");
         DrawBoard(interface, game->board, MARGIN_HISTORY_BOARD);
     }
     else
