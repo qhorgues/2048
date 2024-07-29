@@ -68,7 +68,7 @@ set(CPACK_NSIS_EXTRA_INSTALL_COMMANDS "
 ")
 
 set(CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "
-    Delete \\\"$DESKTOP\\\\${EWS_APP_NAME}.lnk\\\"
+    Delete \\\"$DESKTOP\\\\${PROJECT_NAME}.lnk\\\"
 ")
 
 include(CPack)
