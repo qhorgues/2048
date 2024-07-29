@@ -621,6 +621,15 @@ static void updateHistory(struct Interface_SDL2 *interface, struct GameEngine co
     if (gameEngine->gameHistory.game[interface->index_history] != NULL)
     {
         popUp(interface, WINDOW_WIDTH - 2*MARGIN_WITH_BOARD + 6, SIZE_BOARD+7);
+        SDL_Rect background;
+        background.x = 0;
+        background.y = 0;
+        background.w = WINDOW_WIDTH;
+        background.h = MARGIN_HISTORY_BOARD - 3;
+
+        SDL_SetRenderDrawColor(interface->renderer, 0, 0, 0, 125);
+        SDL_SetRenderDrawBlendMode(interface->renderer, SDL_BLENDMODE_BLEND);
+        SDL_RenderFillRect(interface->renderer, &background);
         struct PastGame const* game = gameEngine->gameHistory.game[interface->index_history];
         SDL_Texture* text = loadBlendedText(interface->renderer, WHITE, interface->number_font[3], "Vos records");
         SDL_Rect rect_text;
@@ -629,6 +638,24 @@ static void updateHistory(struct Interface_SDL2 *interface, struct GameEngine co
         rect_text.y = 5;
         SDL_RenderCopy(interface->renderer, text, NULL, &rect_text);
         SDL_DestroyTexture(text);
+
+
+        char txt_score[30];
+        if (interface->index_history == 0)
+        {
+            snprintf(txt_score, 30, "Meilleur score : %d", gameEngine->gameHistory.game[interface->index_history]->score);
+        }
+        else
+        {
+            snprintf(txt_score, 30, "Score : %d", gameEngine->gameHistory.game[interface->index_history]->score);
+        }
+        text = loadBlendedText(interface->renderer, WHITE, interface->number_font[4], txt_score);
+        SDL_QueryTexture(text, NULL, NULL, &rect_text.w, &rect_text.h);
+        rect_text.x = WINDOW_WIDTH /2 - rect_text.w /2;
+        rect_text.y = 35;
+        SDL_RenderCopy(interface->renderer, text, NULL, &rect_text);
+        SDL_DestroyTexture(text);
+
 
         DrawBoard(interface, game->board, MARGIN_HISTORY_BOARD);
     }
