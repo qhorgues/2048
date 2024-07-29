@@ -2,6 +2,9 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include "GameEngine/GameEngine.h"
+#include "GameEngine/GameHistory.h"
+
 #define UNUSED(x) ((void)(x))
 
 char *removeExeInPath(char const *exe_path)
@@ -24,7 +27,14 @@ char *removeExeInPath(char const *exe_path)
 int main(int argc, char **argv)
 {
     UNUSED(argc);
-    char *str = removeExeInPath(argv[0]);
-    free(str);
+    char *path_exe = removeExeInPath(argv[0]);
+    free(path_exe);
+
+    struct GameEngine engine = initGameEngine();
+    engine.score = 1548153;
+    struct GameHistory history = initGameHistory();
+    checkIfNewBestScore(&engine, &history);
+    freeGameHistory(&history);
+
     return 0;
 }
