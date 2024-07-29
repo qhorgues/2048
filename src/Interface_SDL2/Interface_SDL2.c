@@ -36,7 +36,8 @@
 #define RADIUS_BOARD RADIUS_TILE
 #define RADIUS_BUTTON RADIUS_TILE
 #define MARGIN_TOP_WITH_BOARD (WINDOW_HEIGHT - SIZE_BOARD - MARGIN_WITH_BOARD)
-#define POS_INFO (WINDOW_WIDTH - 2*SIZE_LOGO - 2*MARGIN_LOGO)
+#define POS_INFO (WINDOW_WIDTH - 2*SIZE_LOGO - 2*MARGIN_LOGO) - 20
+#define MARGIN_SCORE_HIGHTSCORE 10
 #define MARGIN_HISTORY_BOARD  (WINDOW_HEIGHT - SIZE_BOARD)/2
 
 #define WHITE ((SDL_Color){255, 255, 255, SDL_ALPHA_OPAQUE})
@@ -212,7 +213,7 @@ Interface *initInterface(char const *dir_exe)
     interface->buttons[INDEX_BUTTON_IN_GAME] = initButton(interface->renderer, &pos_button_replay, "Rejouer", interface->number_font[5], (SDL_Color) {255, 255, 255, 255}, TILE_2048_COLOR);
 
     SDL_Rect pos_button_history = {
-        .x = POS_INFO  + SIZE_LOGO + MARGIN_LOGO,
+        .x = POS_INFO  + SIZE_LOGO + MARGIN_SCORE_HIGHTSCORE,
         .y = 2*MARGIN_LOGO + 2*(SIZE_LOGO / 3),
         .w = SIZE_LOGO,
         .h = SIZE_LOGO/3 - MARGIN_LOGO};
@@ -459,18 +460,16 @@ static void DrawLogo(struct Interface_SDL2 *interface)
 
 static void DrawScore(struct Interface_SDL2 *interface, int score, int xPos, int yPos, const char* score_name)
 {
-    if (interface->text_score == NULL)
-    {
-        interface->text_score = loadShadedText(interface->renderer, BOARD_COLOR, COLOR_TEXT_SCORE, interface->number_font[5], score_name);
-    }
+    SDL_Texture *text_score = loadShadedText(interface->renderer, BOARD_COLOR, COLOR_TEXT_SCORE, interface->number_font[5], score_name);
     SDL_Rect txt_rect;
     SDL_Rect rect_tile = {.x = xPos , .y = yPos, .w = SIZE_LOGO, .h = 2*(SIZE_LOGO / 3)};
-    SDL_QueryTexture(interface->text_score , NULL, NULL, &(txt_rect.w), &(txt_rect.h));
+    SDL_QueryTexture(text_score , NULL, NULL, &(txt_rect.w), &(txt_rect.h));
     txt_rect.x =  rect_tile.x + rect_tile.w / 2 - txt_rect.w / 2;
     txt_rect.y = rect_tile.y + rect_tile.h / 2 - txt_rect.h / 2 - 12;
     SDL_SetRenderDrawColor(interface->renderer, BOARD_COLOR.r, BOARD_COLOR.g, BOARD_COLOR.b, SDL_ALPHA_OPAQUE);
     SDL_RenderFillRoudedRect(interface->renderer, &rect_tile, RADIUS_TILE);
-    SDL_RenderCopy(interface->renderer, interface->text_score, NULL, &txt_rect);
+    SDL_RenderCopy(interface->renderer, text_score, NULL, &txt_rect);
+    SDL_DestroyTexture(text_score);
 
     char txt_score[12];
     snprintf(txt_score, 12, "%d", score);
@@ -567,6 +566,14 @@ static void updateInGame(struct Interface_SDL2 *interface, struct GameEngine con
 {
     DrawLogo(interface);
     DrawScore(interface, gameEngine->score, POS_INFO, MARGIN_LOGO, "SCORE");
+    if (gameEngine->gameHistory.game[0] != NULL)
+    {
+        DrawScore(interface, gameEngine->gameHistory.game[0]->score, POS_INFO + SIZE_LOGO + MARGIN_SCORE_HIGHTSCORE, MARGIN_LOGO, "MEILLEUR");
+    }
+    else
+    {
+        DrawScore(interface, 0, POS_INFO + SIZE_LOGO + MARGIN_SCORE_HIGHTSCORE, MARGIN_LOGO, "MEILLEUR");
+    }
     for (int i = INDEX_BUTTON_IN_GAME; i < END_INDEX_BUTTON_IN_GAME; i++)
     {
         renderButton(interface->renderer, interface->buttons[i]);
@@ -594,6 +601,7 @@ static void updateHistory(struct Interface_SDL2 *interface, struct GameEngine co
         popUp(interface, WINDOW_WIDTH - 2*MARGIN_WITH_BOARD + 6, SIZE_BOARD+7);
         struct PastGame const* game = gameEngine->gameHistory.game[interface->index_history];
 
+        DrawScore(interface, gameEngine->gameHistory.game[interface->index_history]->score, POS_INFO, MARGIN_LOGO, "SCORE");
         DrawBoard(interface, game->board, MARGIN_HISTORY_BOARD);
     }
     else
@@ -857,9 +865,14 @@ void test(Interface *interface, struct GameEngine *gameEngine, enum GameStatus s
 {
     gameEngine->score = 5467626;
     update(interface, status, gameEngine);
-    if(getInteraction(interface, &status, gameEngine) == INTERACTION_QUIT){
-        exit(0);
+    bool running = true;
+    while (running)
+    {
+        if(getInteraction(interface, &status, gameEngine) == INTERACTION_QUIT){
+            running = false;
+        }
     }
+    checkIfNewBestScore(gameEngine, &(gameEngine->gameHistory));
     update(interface, status, gameEngine);
-    SDL_Delay(10000);
+    //SDL_Delay(10000);
 }
