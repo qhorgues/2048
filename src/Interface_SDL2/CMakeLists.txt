@@ -20,7 +20,6 @@ set (HEADERS
 
 set (ASSETS
   assets/calibrib.ttf
-  assets/imprisha.ttf
 )
 
 if (MINGW)
