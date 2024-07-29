@@ -588,7 +588,7 @@ static void updateInGame(struct Interface_SDL2 *interface, struct GameEngine con
 {
     DrawLogo(interface);
     DrawScore(interface, gameEngine->score, POS_INFO, MARGIN_LOGO, "SCORE");
-    if (gameEngine->gameHistory.game[0] != NULL)
+    if (gameEngine->gameHistory.game[0] != NULL && gameEngine->gameHistory.game[0] > gameEngine->score)
     {
         DrawScore(interface, gameEngine->gameHistory.game[0]->score, POS_INFO + SIZE_LOGO + MARGIN_SCORE_HIGHTSCORE, MARGIN_LOGO, "MEILLEUR");
     }
