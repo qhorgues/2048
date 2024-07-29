@@ -22,7 +22,6 @@ char* createFolder(void) {
         strcpy(PATH, getenv("HOME"));
 
         strcat(PATH, "/.local/share/2048");
-        puts(PATH);
 
         mkdir(PATH, S_IRWXO | S_IRWXG | S_IRWXU);
     #elif defined(__APPLE__) // not tested
