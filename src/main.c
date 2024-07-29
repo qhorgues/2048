@@ -3,6 +3,9 @@
 #include <string.h>
 #include "Interface.h"
 
+#include "GameEngine/GameEngine.h"
+#include "GameEngine/GameHistory.h"
+
 #define UNUSED(x) ((void)(x))
 
 char *removeExeInPath(char const *exe_path)

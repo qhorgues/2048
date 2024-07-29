@@ -289,6 +289,8 @@ void move(struct GameEngine * gameEngine, enum Interactions interaction)
     case INTERACTION_MOVE_RIGHT:
         moveApplied = moveRight(gameEngine);
         break;
+    case INTERACTION_CHANGE_GAME_STATUS:
+    case INTERACTION_QUIT:
     default:
         break;
     }

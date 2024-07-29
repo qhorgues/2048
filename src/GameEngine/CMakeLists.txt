@@ -9,10 +9,12 @@ set_choice (CMAKE_BUILD_TYPE "Debug;Release;MinSizeRel;RelWithDebInfo" "Debug" "
 
 set (SRCS
     ${CMAKE_SOURCE_DIR}/src/GameEngine/GameEngine.c
+    ${CMAKE_SOURCE_DIR}/src/GameEngine/GameHistory.c
 )
 
 set (HEADERS
     ${CMAKE_SOURCE_DIR}/src/GameEngine/GameEngine.h
+    ${CMAKE_SOURCE_DIR}/src/GameEngine/GameHistory.h
 )
 
 set_sanitizer()
