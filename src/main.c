@@ -2,9 +2,10 @@
 #include <string.h>
 #include <stdlib.h>
 
-#define UNUSED(x) ((void)(x))
+#include "GameEngine/GameEngine.h"
+#include "GameEngine/GameHistory.h"
 
-char* createFolder(void);
+#define UNUSED(x) ((void)(x))
 
 char *removeExeInPath(char const *exe_path)
 {
@@ -27,9 +28,13 @@ int main(int argc, char **argv)
 {
     UNUSED(argc);
     char *path_exe = removeExeInPath(argv[0]);
-    char* user_folder = createFolder();
-    printf("%s\n", user_folder);
-    free(user_folder);
     free(path_exe);
+
+    struct GameEngine engine = initGameEngine();
+    engine.score = 1548153;
+    struct GameHistory history = initGameHistory();
+    checkIfNewBestScore(&engine, &history);
+    freeGameHistory(&history);
+
     return 0;
 }

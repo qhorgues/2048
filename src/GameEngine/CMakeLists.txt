@@ -14,6 +14,7 @@ set (SRCS
 
 set (HEADERS
     ${CMAKE_SOURCE_DIR}/src/GameEngine/GameEngine.h
+    ${CMAKE_SOURCE_DIR}/src/GameEngine/GameHistory.h
 )
 
 set_sanitizer()
