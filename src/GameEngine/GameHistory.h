@@ -22,7 +22,7 @@ struct GameHistory
 
 struct GameHistory initGameHistory(void);
 
-bool checkIfNewBestScore(struct GameEngine* gameEngine, struct GameHistory *gameHistory);
+bool checkIfNewBestScore(struct GameEngine* gameEngine);
 
 void freeGameHistory(struct GameHistory *history);
 
