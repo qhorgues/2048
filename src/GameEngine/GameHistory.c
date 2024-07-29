@@ -183,12 +183,12 @@ static void addNewBestGame(struct GameEngine* gameEngine, struct GameHistory *ga
     gameHistory->game[0]->score = gameEngine->score;
 }
 
-bool checkIfNewBestScore(struct GameEngine* gameEngine, struct GameHistory *gameHistory)
+bool checkIfNewBestScore(struct GameEngine* gameEngine)
 {
-    if (gameHistory->game[0] == NULL || gameEngine->score > gameHistory->game[0]->score)
+    if (gameEngine->gameHistory.game[0] == NULL || gameEngine->score > gameEngine->gameHistory.game[0]->score)
     {
-        addNewBestGame(gameEngine, gameHistory);
-        saveHistory(gameHistory);
+        addNewBestGame(gameEngine, &gameEngine->gameHistory);
+        saveHistory(&gameEngine->gameHistory);
         return true;
     }
     return false;
