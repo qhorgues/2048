@@ -588,13 +588,13 @@ static void updateInGame(struct Interface_SDL2 *interface, struct GameEngine con
 {
     DrawLogo(interface);
     DrawScore(interface, gameEngine->score, POS_INFO, MARGIN_LOGO, "SCORE");
-    if (gameEngine->gameHistory.game[0] != NULL && gameEngine->gameHistory.game[0] > gameEngine->score)
+    if (gameEngine->gameHistory.game[0] != NULL && gameEngine->gameHistory.game[0]->score > gameEngine->score)
     {
         DrawScore(interface, gameEngine->gameHistory.game[0]->score, POS_INFO + SIZE_LOGO + MARGIN_SCORE_HIGHTSCORE, MARGIN_LOGO, "MEILLEUR");
     }
     else
     {
-        DrawScore(interface, 0, POS_INFO + SIZE_LOGO + MARGIN_SCORE_HIGHTSCORE, MARGIN_LOGO, "MEILLEUR");
+        DrawScore(interface, gameEngine->score, POS_INFO + SIZE_LOGO + MARGIN_SCORE_HIGHTSCORE, MARGIN_LOGO, "MEILLEUR");
     }
     for (int i = INDEX_BUTTON_IN_GAME; i < END_INDEX_BUTTON_IN_GAME; i++)
     {
@@ -620,16 +620,17 @@ static void updateHistory(struct Interface_SDL2 *interface, struct GameEngine co
     
     if (gameEngine->gameHistory.game[interface->index_history] != NULL)
     {
-        popUp(interface, WINDOW_WIDTH - 2*MARGIN_WITH_BOARD + 6, SIZE_BOARD+7);
+        //popUp(interface, WINDOW_WIDTH - 2*MARGIN_WITH_BOARD + 6, SIZE_BOARD+7);
         SDL_Rect background;
         background.x = 0;
         background.y = 0;
         background.w = WINDOW_WIDTH;
-        background.h = MARGIN_HISTORY_BOARD - 3;
+        background.h = WINDOW_HEIGHT;//MARGIN_HISTORY_BOARD - 3;
 
-        SDL_SetRenderDrawColor(interface->renderer, 0, 0, 0, 125);
+        SDL_SetRenderDrawColor(interface->renderer, 0, 0, 0, 200);
         SDL_SetRenderDrawBlendMode(interface->renderer, SDL_BLENDMODE_BLEND);
         SDL_RenderFillRect(interface->renderer, &background);
+        SDL_SetRenderDrawBlendMode(interface->renderer, SDL_BLENDMODE_NONE);
         struct PastGame const* game = gameEngine->gameHistory.game[interface->index_history];
         SDL_Texture* text = loadBlendedText(interface->renderer, WHITE, interface->number_font[3], "Vos records");
         SDL_Rect rect_text;
@@ -859,6 +860,7 @@ enum Interactions getInteraction(Interface *interface, enum GameStatus *status, 
                     if (checkIfPressedButton(inter->buttons[INDEX_BUTTON_HISTORY + 2], event.button.x, event.button.y))
                     {
                         *status = IN_GAME;
+                        inter->index_history = 0;
                         update(interface, *status, gameEngine);
                     }
                 }
