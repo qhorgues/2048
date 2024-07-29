@@ -3,9 +3,10 @@
 
 #include <stdbool.h>
 #include <stddef.h>
-#include "GameEngine.h"
 
 #define NUMBER_SAVE_GAME 5
+
+struct GameEngine;
 
 struct PastGame
 {
@@ -25,4 +26,5 @@ bool checkIfNewBestScore(struct GameEngine* gameEngine, struct GameHistory *game
 
 void freeGameHistory(struct GameHistory *history);
 
+#include "GameEngine.h"
 #endif
