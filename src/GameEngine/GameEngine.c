@@ -24,13 +24,6 @@ struct GameEngine initGameEngine(void)
     return gameEngine;
 }
 
-void freeGameEngine(struct GameEngine* engine)
-{
-    freeGameHistory(&engine->gameHistory);
-}
-
-
-
 /**
  * @brief La fontion réinitialise le tableau.
  * 
