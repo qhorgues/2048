@@ -52,4 +52,6 @@ void move(struct GameEngine * gameEngine, enum Interactions interaction);
  */
 bool isEnding(struct GameEngine const * gameEngine);
 
+void freeGameEngine(struct GameEngine* engine)
+
 #endif
