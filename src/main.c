@@ -33,7 +33,7 @@ int main(int argc, char **argv)
     struct GameEngine engine = initGameEngine();
     engine.score = 1548153;
     struct GameHistory history = initGameHistory();
-    checkIfNewBestScore(&engine, &history);
+    checkIfNewBestScore(&engine);
     freeGameHistory(&history);
 
     return 0;
