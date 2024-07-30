@@ -60,6 +60,23 @@ static int randNewCase(void)
 
 
 
+static int foundEmptyCase(struct GameEngine * gameEngine, int* emptyCase)
+{
+    int index = 0;
+    for (int i = 0; i < 4; i++)
+    {
+        for (int j = 0; j < 4; j++)
+        {
+            if (gameEngine->board[i][j] == 0)
+            {
+                emptyCase[index] = i * 4 + j;
+                index++;
+            }
+        }
+    }
+    return index;
+}
+
 /**
  * @brief Fait apparaître un nombre dans le jeu.
  * 
@@ -68,18 +85,29 @@ static int randNewCase(void)
 static void spawnRandomNumber(struct GameEngine * gameEngine)
 {
     int randomNumber = randNewCase();
-    int poseX = rand() % 4;
-    int poseY = rand() % 4;
+    int i, j;
+    bool found = false;
 
-    int count = poseX + poseY * 4;
-    while (gameEngine->board[poseY][poseX] != 0)
+    for (int k = 0; k < 10; k++)
     {
-        count++;
-        poseX = count % 4;
-        poseY = (count / 4) % 4;
+        i = rand() % 4;
+        j = rand() % 4;
+        if (gameEngine->board[i][j] == 0)
+        {
+            found = true;
+            break;
+        }
+    }
+    if (!found)
+    {
+        int freeCase[16];
+        int numberFreeCase = foundEmptyCase(gameEngine, freeCase);
+        int pos = rand() % numberFreeCase;
+        i = freeCase[pos]/4;
+        j = freeCase[pos]%4;
     }
 
-    gameEngine->board[poseY][poseX] = randomNumber;
+    gameEngine->board[i][j] = randomNumber;
 }
 
 
