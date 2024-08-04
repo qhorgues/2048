@@ -77,5 +77,3 @@ install(DIRECTORY ${CMAKE_SOURCE_DIR}/assets/ DESTINATION bin/assets)
 foreach(df ${ASSETS})
     file(COPY ${CMAKE_SOURCE_DIR}/${df} DESTINATION ${CMAKE_BINARY_DIR}/assets)
 endforeach()
-
-SET(CPACK_DEBIAN_PACKAGE_DEPENDS "libc6 libsdl2 libsdl2_ttf")
