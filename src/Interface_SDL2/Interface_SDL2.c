@@ -9,11 +9,12 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include <math.h>
 #include "../Interface.h"
 
-#define WINDOW_WIDTH 360
-#define WINDOW_HEIGHT 480
+#define WINDOW_WIDTH (interface->width)//600//360
+#define WINDOW_HEIGHT (interface->height)//800//480
 
 
 
@@ -22,23 +23,42 @@
 #define NUMBER_BUTTON_END_GAME 2
 #define NUMBER_BUTTON_HISTORY 3
 
-#define SIZE_TILE 75
-#define SPACE_BETWEEN_TILE 10
-#define MARGIN_WITH_BOARD 5
-#define MARGIN_LOGO 5
-#define SIZE_LOGO 90
 
 #define NUMBER_FONT 7
 
 /*******************INTERNAL******************/
+#define SIZE_TILE (int)(WINDOW_WIDTH / 4.8)
+#define SPACE_BETWEEN_TILE (WINDOW_WIDTH / 36)
+#define MARGIN_WITH_BOARD (WINDOW_WIDTH / 72)
+#define MARGIN_LOGO (WINDOW_WIDTH / 72)
+#define SIZE_LOGO (WINDOW_WIDTH / 4)
+#define INIT_SIZE_FONT (int)(WINDOW_WIDTH / 6.21)
+#define FONT_UPSCALE (WINDOW_WIDTH / 45)
+#define WIDTH_HISTORY_BUTTON (int)(WINDOW_WIDTH / 7.2)
+#define HEIGHT_HISTORY_BUTTON WIDTH_HISTORY_BUTTON
+#define WIDTH_RETURN_HISTORY_BUTTON (int)(WINDOW_WIDTH / 1.8)
+#define WIDTH_END_BUTTON (int)(WINDOW_WIDTH/3.2)
+#define HEIGHT_END_BUTTON (int)(WINDOW_WIDTH/3.83)
+#define END_BUTTON_INIT_POS_X (int)(WINDOW_WIDTH/5.45)
+#define MARGIN_BUTTON_END (WINDOW_WIDTH/65)
+#define END_BUTTON_INIT_POS_Y (WINDOW_HEIGHT/2 + WINDOW_HEIGHT/24)
+#define MARGIN_POS_BUTTON_LEFT (WINDOW_WIDTH/36)
+#define MARGIN_Y_POS_BUTTON_LEFT (WINDOW_WIDTH/40)
+#define MARGIN_SCORE_NAME (WINDOW_WIDTH/30)
+
 #define SIZE_BOARD ((SIZE_TILE * 4) + (SPACE_BETWEEN_TILE * 5))
 #define RADIUS_TILE (SIZE_TILE / 10)
 #define RADIUS_BOARD RADIUS_TILE
 #define RADIUS_BUTTON RADIUS_TILE
 #define MARGIN_TOP_WITH_BOARD (WINDOW_HEIGHT - SIZE_BOARD - MARGIN_WITH_BOARD)
 #define POS_INFO (WINDOW_WIDTH - 2*SIZE_LOGO - 4*MARGIN_LOGO)
-#define MARGIN_SCORE_HIGHTSCORE 10
+#define MARGIN_SCORE_HIGHTSCORE (WINDOW_WIDTH/36)
+#define MARGIN_END_TEXT (WINDOW_WIDTH/36)
+#define MARGIN_END_TEXT_SCORE (WINDOW_WIDTH/24)
+#define MARGIN_END_SCORE (WINDOW_WIDTH/18)
 #define MARGIN_HISTORY_BOARD  (WINDOW_HEIGHT - SIZE_BOARD)/2
+#define MARGIN_HISTORY_TEXT (WINDOW_WIDTH/72)
+#define MARGIN_HISTORY_SCORE (int)(WINDOW_WIDTH/10.28)
 
 #define WHITE ((SDL_Color){255, 255, 255, SDL_ALPHA_OPAQUE})
 #define BLACK ((SDL_Color){0, 0, 0, SDL_ALPHA_OPAQUE})
@@ -103,9 +123,12 @@ struct Interface_SDL2
     SDL_Texture* text_score;
     TTF_Font *number_font[NUMBER_FONT];
     SDL_Texture *texture_number[17];
+    char* dir_exe;
     bool key_pressed[4];
     struct Button* buttons[NUMBER_BUTTON];
     int index_history;
+    int width;
+    int height;
 };
 
 static struct Button* initButton(SDL_Renderer* renderer, SDL_Rect const* position, char const* text, TTF_Font* font, SDL_Color text_color, SDL_Color color_button)
@@ -149,37 +172,14 @@ static bool checkIfPressedButton(struct Button* button, int x, int y)
 
 static void RenderDrawTextRoundedRectBox_with_texture(SDL_Renderer *renderer, SDL_Rect const *rect, int radius, SDL_Texture *texture_text, SDL_Color background);
 
-static void renderButton(SDL_Renderer *renderer, struct Button * button)
+static void renderButton(struct Interface_SDL2* interface, struct Button * button)
 {
-    RenderDrawTextRoundedRectBox_with_texture(renderer, &button->rect, RADIUS_BUTTON, button->texture_button, button->color_button);
+    RenderDrawTextRoundedRectBox_with_texture(interface->renderer, &button->rect, RADIUS_BUTTON, button->texture_button, button->color_button);
 }
 
-Interface *initInterface(char const *dir_exe)
+Interface* loadInterface(struct Interface_SDL2* interface)
 {
-    SDL_Init(SDL_INIT_VIDEO);
-    TTF_Init();
-    struct Interface_SDL2 *interface = malloc(sizeof(struct Interface_SDL2));
-    if (interface == NULL)
-    {
-        return NULL;
-    }
-
-    interface->window = SDL_CreateWindow("2048", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_SHOWN);
-    if (interface->window == NULL)
-    {
-        free(interface);
-        return NULL;
-    }
-
-    interface->renderer = SDL_CreateRenderer(interface->window, -1, SDL_RENDERER_ACCELERATED);
-    if (interface->renderer == NULL)
-    {
-        SDL_DestroyWindow(interface->window);
-        free(interface);
-        return NULL;
-    }
-
-    char *font_dir = malloc((sizeof(char) * strlen(dir_exe)) + sizeof("assets/calibrib.ttf"));
+    char *font_dir = malloc((sizeof(char) * strlen(interface->dir_exe)) + sizeof("assets/calibrib.ttf"));
     if (font_dir == NULL)
     {
         SDL_DestroyRenderer(interface->renderer);
@@ -188,12 +188,12 @@ Interface *initInterface(char const *dir_exe)
         return NULL;
     }
 
-    strcpy(font_dir, dir_exe);
+    strcpy(font_dir, interface->dir_exe);
     strcat(font_dir, "assets/calibrib.ttf");
 
     for (int i = 1; i < NUMBER_FONT; i++)
     {
-        interface->number_font[i] = TTF_OpenFont(font_dir, 58 - 8 * i);
+        interface->number_font[i] = TTF_OpenFont(font_dir, INIT_SIZE_FONT - FONT_UPSCALE * i);
     }
     interface->number_font[0] = interface->number_font[1];
 
@@ -220,43 +220,87 @@ Interface *initInterface(char const *dir_exe)
     interface->buttons[INDEX_BUTTON_IN_GAME + 1] = initButton(interface->renderer, &pos_button_history, "Historique", interface->number_font[5], (SDL_Color) {255, 255, 255, 255}, TILE_2048_COLOR);
 
     SDL_Rect pos_button_restart = {
-        .x = WINDOW_WIDTH / 6 + 6,
-        .y = WINDOW_HEIGHT / 2 + 20,
-        .w = END_POP_UP_WIDTH / 2 - 9,
-        .h = WINDOW_HEIGHT / 2 - END_POP_UP_HEIGHT / 2 -26};
+        .x = END_BUTTON_INIT_POS_X,
+        .y = END_BUTTON_INIT_POS_Y,
+        .w = WIDTH_END_BUTTON,
+        .h = HEIGHT_END_BUTTON};
     interface->buttons[INDEX_BUTTON_END_GAME] = initButton(interface->renderer, &pos_button_restart, "Rejouer", interface->number_font[3], WHITE, TILE_2048_COLOR);
 
     SDL_Rect pos_button_quit = {
-        .x = WINDOW_WIDTH / 6 + END_POP_UP_WIDTH / 2 + 3,
-        .y = WINDOW_HEIGHT / 2 + 20,
-        .w = END_POP_UP_WIDTH / 2 - 9,
-        .h = WINDOW_HEIGHT / 2 - END_POP_UP_HEIGHT / 2 -26};
+        .x = END_BUTTON_INIT_POS_X + WIDTH_END_BUTTON + MARGIN_BUTTON_END,
+        .y = END_BUTTON_INIT_POS_Y,
+        .w = WIDTH_END_BUTTON,
+        .h = HEIGHT_END_BUTTON};
     interface->buttons[INDEX_BUTTON_END_GAME +1] = initButton(interface->renderer, &pos_button_quit, "Quitter", interface->number_font[3], WHITE, TILE_2048_COLOR);
 
     SDL_Rect pos_button_left_arrow = {
-        .x = MARGIN_WITH_BOARD +10, 
-        .y = WINDOW_HEIGHT / 2 + SIZE_BOARD / 2 + 9,
-        .w = 50,
-        .h = 50};
+        .x = MARGIN_WITH_BOARD + MARGIN_POS_BUTTON_LEFT, 
+        .y = WINDOW_HEIGHT / 2 + SIZE_BOARD / 2 + MARGIN_Y_POS_BUTTON_LEFT,
+        .w = WIDTH_HISTORY_BUTTON,
+        .h = HEIGHT_HISTORY_BUTTON};
     interface->buttons[INDEX_BUTTON_HISTORY] = initButton(interface->renderer, &pos_button_left_arrow, "<", interface->number_font[2], WHITE, TILE_2048_COLOR);
 
     SDL_Rect pos_button_right_arrow = {
-        .x = WINDOW_WIDTH - MARGIN_WITH_BOARD -60, 
-        .y = WINDOW_HEIGHT / 2 + SIZE_BOARD / 2 + 9,
-        .w = 50,
-        .h = 50};
+        .x = WINDOW_WIDTH - MARGIN_WITH_BOARD - MARGIN_Y_POS_BUTTON_LEFT - WIDTH_HISTORY_BUTTON, 
+        .y = WINDOW_HEIGHT / 2 + SIZE_BOARD / 2 + MARGIN_Y_POS_BUTTON_LEFT,
+        .w = WIDTH_HISTORY_BUTTON,
+        .h = HEIGHT_HISTORY_BUTTON};
     interface->buttons[INDEX_BUTTON_HISTORY + 1] = initButton(interface->renderer, &pos_button_right_arrow, ">", interface->number_font[2], WHITE, TILE_2048_COLOR);
 
-    int const width_return = 200;
+    int const width_return = WIDTH_RETURN_HISTORY_BUTTON;
     SDL_Rect pos_button_return = {
         .x = WINDOW_WIDTH / 2 - width_return/2, 
-        .y = WINDOW_HEIGHT / 2 + SIZE_BOARD / 2 + 9,
-        .w = width_return,
-        .h = 50};
+        .y = WINDOW_HEIGHT / 2 + SIZE_BOARD / 2 + MARGIN_Y_POS_BUTTON_LEFT,
+        .w = WIDTH_RETURN_HISTORY_BUTTON,
+        .h = HEIGHT_HISTORY_BUTTON};
     interface->buttons[INDEX_BUTTON_HISTORY + 2] = initButton(interface->renderer, &pos_button_return, "Retour", interface->number_font[2], WHITE, TILE_2048_COLOR);
 
     interface->index_history = 0;
 
+    return interface;
+}
+
+Interface *initInterface(char const *dir_exe)
+{
+    struct Interface_SDL2 *interface = malloc(sizeof(struct Interface_SDL2));
+    if (interface == NULL)
+    {
+        return NULL;
+    }
+    size_t len_dir_exe = strlen(dir_exe);
+    interface->dir_exe = malloc(sizeof(char)*(len_dir_exe+1));
+    if (interface->dir_exe == NULL)
+    {
+        free(interface);
+        return NULL;
+    }
+    strcpy(interface->dir_exe, dir_exe);
+    SDL_Init(SDL_INIT_VIDEO);
+    TTF_Init();
+
+    interface->width = 360;
+    interface->height = 480;
+
+    interface->window = SDL_CreateWindow(
+        "2048", 
+        SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
+        WINDOW_WIDTH, WINDOW_HEIGHT, 
+        SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
+    if (interface->window == NULL)
+    {
+        free(interface);
+        return NULL;
+    }
+
+    interface->renderer = SDL_CreateRenderer(interface->window, -1, SDL_RENDERER_ACCELERATED);
+    if (interface->renderer == NULL)
+    {
+        SDL_DestroyWindow(interface->window);
+        free(interface);
+        return NULL;
+    }
+
+    loadInterface(interface);
     return interface;
 }
 
@@ -487,7 +531,7 @@ static void DrawScore(struct Interface_SDL2 *interface, int score, int xPos, int
     SDL_Rect rect_tile = {.x = xPos , .y = yPos, .w = SIZE_LOGO, .h = 2*(SIZE_LOGO / 3)};
     SDL_QueryTexture(text_score , NULL, NULL, &(txt_rect.w), &(txt_rect.h));
     txt_rect.x =  rect_tile.x + rect_tile.w / 2 - txt_rect.w / 2;
-    txt_rect.y = rect_tile.y + rect_tile.h / 2 - txt_rect.h / 2 - 12;
+    txt_rect.y = rect_tile.y + rect_tile.h / 2 - txt_rect.h / 2 - MARGIN_SCORE_NAME;
     SDL_SetRenderDrawColor(interface->renderer, BOARD_COLOR.r, BOARD_COLOR.g, BOARD_COLOR.b, SDL_ALPHA_OPAQUE);
     SDL_RenderFillRoudedRect(interface->renderer, &rect_tile, RADIUS_TILE);
     SDL_RenderCopy(interface->renderer, text_score, NULL, &txt_rect);
@@ -513,7 +557,7 @@ static void DrawScore(struct Interface_SDL2 *interface, int score, int xPos, int
     SDL_Rect score_txt_rect;
     SDL_QueryTexture(texture_score, NULL, NULL, &(score_txt_rect.w), &(score_txt_rect.h));
     score_txt_rect.x =  rect_tile.x + rect_tile.w / 2 - score_txt_rect.w / 2;
-    score_txt_rect.y = rect_tile.y + rect_tile.h / 2 - score_txt_rect.h / 2 +12;
+    score_txt_rect.y = rect_tile.y + rect_tile.h / 2 - score_txt_rect.h / 2 +MARGIN_SCORE_NAME;
     SDL_RenderCopy(interface->renderer, texture_score, NULL, &score_txt_rect);
     SDL_DestroyTexture(texture_score);
 }
@@ -536,7 +580,7 @@ void DrawScoreEnd(struct Interface_SDL2 *interface, int score)
     SDL_Rect end_txt_rect;
     SDL_QueryTexture(texture_end , NULL, NULL, &(end_txt_rect.w), &(end_txt_rect.h));
     end_txt_rect.x =  WINDOW_WIDTH / 2  - end_txt_rect.w / 2;
-    end_txt_rect.y = WINDOW_HEIGHT / 2 - END_POP_UP_HEIGHT / 2 + 10;
+    end_txt_rect.y = WINDOW_HEIGHT / 2 - END_POP_UP_HEIGHT / 2 + MARGIN_END_TEXT;
     SDL_RenderCopy(interface->renderer, texture_end, NULL, &end_txt_rect);
     SDL_DestroyTexture(texture_end);
 
@@ -544,7 +588,7 @@ void DrawScoreEnd(struct Interface_SDL2 *interface, int score)
     texture_end = loadShadedText(interface->renderer, WHITE, BLACK, interface->number_font[4], "Votre score est de :");
     SDL_QueryTexture(texture_end , NULL, NULL, &(end_txt_rect.w), &(end_txt_rect.h));
     end_txt_rect.x =  WINDOW_WIDTH / 2  - end_txt_rect.w / 2;
-    end_txt_rect.y = WINDOW_HEIGHT / 2 - END_POP_UP_HEIGHT / 2 + height_first_line + 15;
+    end_txt_rect.y = WINDOW_HEIGHT / 2 - END_POP_UP_HEIGHT / 2 + height_first_line + MARGIN_END_TEXT_SCORE;
     SDL_RenderCopy(interface->renderer, texture_end, NULL, &end_txt_rect);
     SDL_DestroyTexture(texture_end);
     
@@ -556,7 +600,7 @@ void DrawScoreEnd(struct Interface_SDL2 *interface, int score)
     SDL_Rect score_txt_rect;
     SDL_QueryTexture(texture_score, NULL, NULL, &(score_txt_rect.w), &(score_txt_rect.h));
     score_txt_rect.x =  WINDOW_WIDTH / 2  - score_txt_rect.w / 2;
-    score_txt_rect.y = WINDOW_HEIGHT / 2 - END_POP_UP_HEIGHT / 2 + height_first_line + 20;
+    score_txt_rect.y = WINDOW_HEIGHT / 2 - END_POP_UP_HEIGHT / 2 + height_first_line + MARGIN_END_SCORE;
     SDL_RenderCopy(interface->renderer, texture_score, NULL, &score_txt_rect);
     SDL_DestroyTexture(texture_score);
 }
@@ -598,7 +642,7 @@ static void updateInGame(struct Interface_SDL2 *interface, struct GameEngine con
     }
     for (int i = INDEX_BUTTON_IN_GAME; i < END_INDEX_BUTTON_IN_GAME; i++)
     {
-        renderButton(interface->renderer, interface->buttons[i]);
+        renderButton(interface, interface->buttons[i]);
     }
     DrawBoard(interface, gameEngine->board, MARGIN_TOP_WITH_BOARD);
 }
@@ -610,7 +654,7 @@ static void updateEndGame(struct Interface_SDL2 *interface, struct GameEngine co
     DrawScoreEnd(interface, gameEngine->score);
     for (int i = INDEX_BUTTON_END_GAME; i < END_INDEX_BUTTON_END_GAME; i++)
     {
-        renderButton(interface->renderer, interface->buttons[i]);
+        renderButton(interface, interface->buttons[i]);
     }
 }
 
@@ -636,7 +680,7 @@ static void updateHistory(struct Interface_SDL2 *interface, struct GameEngine co
         SDL_Rect rect_text;
         SDL_QueryTexture(text, NULL, NULL, &rect_text.w, &rect_text.h);
         rect_text.x = WINDOW_WIDTH /2 - rect_text.w /2;
-        rect_text.y = 5;
+        rect_text.y = MARGIN_HISTORY_TEXT;
         SDL_RenderCopy(interface->renderer, text, NULL, &rect_text);
         SDL_DestroyTexture(text);
 
@@ -653,7 +697,7 @@ static void updateHistory(struct Interface_SDL2 *interface, struct GameEngine co
         text = loadBlendedText(interface->renderer, WHITE, interface->number_font[4], txt_score);
         SDL_QueryTexture(text, NULL, NULL, &rect_text.w, &rect_text.h);
         rect_text.x = WINDOW_WIDTH /2 - rect_text.w /2;
-        rect_text.y = 35;
+        rect_text.y = MARGIN_HISTORY_SCORE;
         SDL_RenderCopy(interface->renderer, text, NULL, &rect_text);
         SDL_DestroyTexture(text);
 
@@ -681,7 +725,7 @@ static void updateHistory(struct Interface_SDL2 *interface, struct GameEngine co
 
     for (int i = INDEX_BUTTON_HISTORY; i < END_INDEX_BUTTON_HISTORY; i++)
     {
-        renderButton(interface->renderer, interface->buttons[i]);
+        renderButton(interface, interface->buttons[i]);
     }
 }
 
@@ -712,6 +756,9 @@ static void replayButton(struct GameEngine *gameEngine)
     resetGameEngine(gameEngine);
 }
 
+
+static void unloadInterface(struct Interface_SDL2* inter);
+
 enum Interactions getInteraction(Interface *interface, enum GameStatus *status, struct GameEngine *gameEngine)
 {
     struct Interface_SDL2 *inter = interface;
@@ -722,6 +769,14 @@ enum Interactions getInteraction(Interface *interface, enum GameStatus *status, 
         switch (event.type)
         {
         case SDL_WINDOWEVENT:
+            if (event.window.event == SDL_WINDOWEVENT_RESIZED)
+            {
+                inter->width = event.window.data1;
+                inter->height = (event.window.data1 * 4)/3;
+                SDL_SetWindowSize(inter->window, inter->width, inter->height);
+                unloadInterface(inter);
+                loadInterface(inter);
+            }
             update(interface, *status, gameEngine);
             break;
         case SDL_QUIT:
@@ -872,9 +927,8 @@ enum Interactions getInteraction(Interface *interface, enum GameStatus *status, 
     }
 }
 
-void freeInterface(Interface *interface)
+static void unloadInterface(struct Interface_SDL2* inter)
 {
-    struct Interface_SDL2 *inter = interface;
     if (inter->text_logo)
     {
         SDL_DestroyTexture(inter->text_logo);
@@ -904,16 +958,22 @@ void freeInterface(Interface *interface)
             SDL_DestroyTexture(inter->texture_number[i]);
         }
     }
-    if (inter->renderer)
-    {
-        SDL_DestroyRenderer(inter->renderer);
-    }
-    if (inter->window)
-    {
-        SDL_DestroyWindow(inter->window);
-    }
 
-    free(inter);
+}
+
+void freeInterface(Interface *interface)
+{
+    unloadInterface(interface);
+    if (((struct Interface_SDL2*)interface)->renderer)
+    {
+        SDL_DestroyRenderer(((struct Interface_SDL2*)interface)->renderer);
+    }
+    if (((struct Interface_SDL2*)interface)->window)
+    {
+        SDL_DestroyWindow(((struct Interface_SDL2*)interface)->window);
+    }
+    free(((struct Interface_SDL2*)interface)->dir_exe);
+    free(interface);
     TTF_Quit();
     SDL_Quit();
 }
