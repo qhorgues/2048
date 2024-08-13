@@ -43,7 +43,7 @@ else ()
     configure_file(2048.desktop.in 2048.desktop)
 
     install (FILES ${CMAKE_BINARY_DIR}/2048.desktop DESTINATION ${2048_DESKTOP_DIR})
-    install(FILES ${CMAKE_SOURCE_DIR}/2048.png DESTINATION ${2048_PIXMAPS_DIR})
+    install(FILES ${CMAKE_SOURCE_DIR}/2048.svg DESTINATION ${2048_PIXMAPS_DIR})
 endif()
 
 add_executable ( ${PROJECT_NAME} ${SRCS} ${HEADERS} ${ICONE})
