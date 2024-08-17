@@ -127,8 +127,8 @@ struct Interface_SDL2
     bool key_pressed[4];
     struct Button* buttons[NUMBER_BUTTON];
     int index_history;
-    int game_width;
-    int game_height;
+    int width;
+    int height;
 };
 
 static struct Button* initButton(SDL_Renderer* renderer, SDL_Rect const* position, char const* text, TTF_Font* font, SDL_Color text_color, SDL_Color color_button)
