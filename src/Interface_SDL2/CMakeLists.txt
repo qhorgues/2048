@@ -1,6 +1,6 @@
 cmake_minimum_required (VERSION 3.20)
 
-project (Interface_SDL2 LANGUAGES C VERSION 0.1)
+project (Interface_SDL2 LANGUAGES C VERSION 1.0)
 
 include(CTest)
 enable_testing()
@@ -20,7 +20,6 @@ set (HEADERS
 
 set (ASSETS
   assets/calibrib.ttf
-  assets/imprisha.ttf
 )
 
 if (MINGW)
@@ -78,5 +77,3 @@ install(DIRECTORY ${CMAKE_SOURCE_DIR}/assets/ DESTINATION bin/assets)
 foreach(df ${ASSETS})
     file(COPY ${CMAKE_SOURCE_DIR}/${df} DESTINATION ${CMAKE_BINARY_DIR}/assets)
 endforeach()
-
-SET(CPACK_DEBIAN_PACKAGE_DEPENDS "libc6 libsdl2 libsdl2_ttf")

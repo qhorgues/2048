@@ -1,6 +1,6 @@
 cmake_minimum_required (VERSION 3.20)
 
-project (GameEngine LANGUAGES C VERSION 0.1)
+project (GameEngine LANGUAGES C VERSION 1.0)
 
 include (${CMAKE_SOURCE_DIR}/cmake/CompilerWarnings.cmake)
 include (${CMAKE_SOURCE_DIR}/cmake/option.cmake)

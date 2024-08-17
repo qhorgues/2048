@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Name=2048
+Comment=Le jeu du 2048 en français
+Exec=@CMAKE_INSTALL_PREFIX@/bin/2048
+Icon=2048
+Terminal=false
+Type=Application
+Categories=Game;
+GenericName=2048
+X-KDE-SubstituteUID=false
