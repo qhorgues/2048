@@ -35,6 +35,37 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/src/Interface_SDL2)
 
 if (WIN32)
     set(ICONE 2048.rc)
+
+    # Win32 SDL2 dll
+
+    # SDL2pp only for C++
+    # set_option(SDL2PP_DLL_DIR "SDL2PP_BINARY_DIR NOT FOUND" PATH "Path to SDL2pp.dll directory")
+    # configure_file(${SDL2PP_DLL_DIR}/libSDL2pp.dll libSDL2pp.dll COPYONLY)
+    # install(FILES ${SDL2PP_DLL_DIR}/libSDL2pp.dll DESTINATION .)
+
+    # SDL2
+    set_option(SDL2_DLL_DIR "SDL2_BINARY_DIR NOT FOUND" PATH "Path to SDL2.dll directory")
+    configure_file(${SDL2_DLL_DIR}/SDL2.dll SDL2.dll COPYONLY)
+    install(FILES ${SDL2_DLL_DIR}/SDL2.dll DESTINATION .)
+
+    # SDL2 ttf
+    set_option(SDL2_TTF_DLL_DIR "SDL2_TTF_BINARY_DIR NOT FOUND" PATH "Path to SDL2_ttf.dll directory")
+    configure_file(${SDL2_TTF_DLL_DIR}/SDL2_ttf.dll SDL2_ttf.dll COPYONLY)
+    install(FILES ${SDL2_TTF_DLL_DIR}/SDL2_ttf.dll DESTINATION .)
+
+    # set_option(SDL2_IMAGE_DLL_DIR "SDL2_IMAGE_BINARY_DIR NOT FOUND" PATH "Path to SDL2_image.dll directory")
+    # configure_file(${SDL2_IMAGE_DLL_DIR}/SDL2_image.dll SDL2_image.dll COPYONLY)
+    # install(FILES ${SDL2_IMAGE_DLL_DIR}/SDL2_image.dll DESTINATION .)
+
+    # set_option(SDL2_MIXER_DLL_DIR "SDL2_MIXER_BINARY_DIR NOT FOUND" PATH "Path to SDL2_mixer.dll directory")
+    # configure_file(${SDL2_MIXER_DLL_DIR}/SDL2_mixer.dll SDL2_mixer.dll COPYONLY)
+    # install(FILES ${SDL2_MIXER_DLL_DIR}/SDL2_mixer.dll DESTINATION .)
+
+    foreach(df ${ASSETS})
+        configure_file(${CMAKE_SOURCE_DIR}/${df} ${CMAKE_BINARY_DIR}/${df} COPYONLY)
+    endforeach()
+
+
 else ()
     # linux .desktop file
     set (2048_DESKTOP_DIR     "/usr/share/applications/")
